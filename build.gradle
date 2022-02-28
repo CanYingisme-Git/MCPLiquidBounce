@@ -1,6 +1,6 @@
 
 buildscript {
-
+    ext.kotlin_version = '1.3.72'
     repositories {
         jcenter()
         mavenLocal()
@@ -8,11 +8,14 @@ buildscript {
         maven { url 'https://plugins.gradle.org/m2' }
     }
     dependencies {
+        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: kotlin_version
         classpath group: 'com.github.jengelman.gradle.plugins', name: 'shadow', version: '4.0.4'//打包
     }
 }
 
 apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'idea'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -34,6 +37,7 @@ allprojects {
 
 dependencies {
     compile group: 'net.minecraft', name: 'minecraft', version: '1.8.9'//游戏本体
+    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
 }
 shadowJar {
     dependencies {
