@@ -1,5 +1,10 @@
 package net.minecraft.client.multiplayer;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.AttackEvent;
+import net.ccbluex.liquidbounce.event.ClickWindowEvent;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.AbortBreaking;
+import net.ccbluex.liquidbounce.injection.backend.EntityImplKt;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -496,6 +501,7 @@ public class PlayerControllerMP
      */
     public void attackEntity(EntityPlayer playerIn, Entity targetEntity)
     {
+        LiquidBounce.eventManager.callEvent(new AttackEvent(EntityImplKt.wrap(targetEntity)));
         this.syncCurrentPlayItem();
         this.netClientHandler.addToSendQueue(new C02PacketUseEntity(targetEntity, C02PacketUseEntity.Action.ATTACK));
 
@@ -528,6 +534,11 @@ public class PlayerControllerMP
      */
     public ItemStack windowClick(int windowId, int slotId, int mouseButtonClicked, int mode, EntityPlayer playerIn)
     {
+        final ClickWindowEvent event = new ClickWindowEvent(windowId, slotId, mouseButtonClicked, mode);
+        LiquidBounce.eventManager.callEvent(event);
+
+        if (event.isCancelled())
+            return playerIn.openContainer.slotClick(slotId, mouseButtonClicked, mode, playerIn);
         short short1 = playerIn.openContainer.getNextTransactionID(playerIn.inventory);
         ItemStack itemstack = playerIn.openContainer.slotClick(slotId, mouseButtonClicked, mode, playerIn);
         this.netClientHandler.addToSendQueue(new C0EPacketClickWindow(windowId, slotId, mouseButtonClicked, mode, itemstack, short1));
@@ -618,9 +629,11 @@ public class PlayerControllerMP
     {
         return this.currentGameType;
     }
-
+    // getIsHittingBlock
     public boolean func_181040_m()
     {
+        if (LiquidBounce.moduleManager.getModule(AbortBreaking.class).getState())
+            return (false);
         return this.isHittingBlock;
     }
 }

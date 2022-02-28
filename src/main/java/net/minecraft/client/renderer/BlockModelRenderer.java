@@ -2,6 +2,11 @@ package net.minecraft.client.renderer;
 
 import java.util.BitSet;
 import java.util.List;
+import java.util.Objects;
+
+import al.nya.mixin.CallbackInfo;
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.render.XRay;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -88,8 +93,19 @@ public class BlockModelRenderer
 
     public boolean renderModelAmbientOcclusion(IBlockAccess blockAccessIn, IBakedModel modelIn, Block blockIn, BlockPos blockPosIn, WorldRenderer worldRendererIn, boolean checkSides)
     {
+        CallbackInfo cb = new CallbackInfo<Boolean>(null);
+        renderModelAmbientOcclusion(blockAccessIn,modelIn,blockIn,blockPosIn,worldRendererIn,checkSides,cb);
+        if (cb.getValue() != null){
+            return (boolean) cb.getValue();
+        }
         IBlockState iblockstate = blockAccessIn.getBlockState(blockPosIn);
         return this.renderModelSmooth(blockAccessIn, modelIn, iblockstate, blockPosIn, worldRendererIn, checkSides);
+    }
+    private void renderModelAmbientOcclusion(IBlockAccess blockAccessIn, IBakedModel modelIn, Block blockIn, BlockPos blockPosIn, WorldRenderer worldRendererIn, boolean checkSide, final CallbackInfo<Boolean> booleanCallbackInfoReturnable) {
+        final XRay xray = (XRay) LiquidBounce.moduleManager.getModule(XRay.class);
+
+        if (Objects.requireNonNull(xray).getState() && !xray.getXrayBlocks().contains(blockIn))
+            booleanCallbackInfoReturnable.setReturnValue(false);
     }
 
     private boolean renderModelSmooth(IBlockAccess p_renderModelSmooth_1_, IBakedModel p_renderModelSmooth_2_, IBlockState p_renderModelSmooth_3_, BlockPos p_renderModelSmooth_4_, WorldRenderer p_renderModelSmooth_5_, boolean p_renderModelSmooth_6_)
@@ -130,8 +146,19 @@ public class BlockModelRenderer
 
     public boolean renderModelStandard(IBlockAccess blockAccessIn, IBakedModel modelIn, Block blockIn, BlockPos blockPosIn, WorldRenderer worldRendererIn, boolean checkSides)
     {
+        CallbackInfo cb = new CallbackInfo<Boolean>(null);
+        renderModelStandard(blockAccessIn,modelIn,blockIn,blockPosIn,worldRendererIn,checkSides,cb);
+        if (cb.getValue() != null){
+            return (boolean) cb.getValue();
+        }
         IBlockState iblockstate = blockAccessIn.getBlockState(blockPosIn);
         return this.renderModelFlat(blockAccessIn, modelIn, iblockstate, blockPosIn, worldRendererIn, checkSides);
+    }
+    private void renderModelStandard(IBlockAccess blockAccessIn, IBakedModel modelIn, Block blockIn, BlockPos blockPosIn, WorldRenderer worldRendererIn, boolean checkSides, final CallbackInfo<Boolean> booleanCallbackInfoReturnable) {
+        final XRay xray = (XRay) LiquidBounce.moduleManager.getModule(XRay.class);
+
+        if (Objects.requireNonNull(xray).getState() && !xray.getXrayBlocks().contains(blockIn))
+            booleanCallbackInfoReturnable.setReturnValue(false);
     }
 
     public boolean renderModelFlat(IBlockAccess p_renderModelFlat_1_, IBakedModel p_renderModelFlat_2_, IBlockState p_renderModelFlat_3_, BlockPos p_renderModelFlat_4_, WorldRenderer p_renderModelFlat_5_, boolean p_renderModelFlat_6_)

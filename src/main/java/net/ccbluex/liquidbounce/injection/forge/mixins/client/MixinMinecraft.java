@@ -5,55 +5,11 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.*;
-import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
-import net.ccbluex.liquidbounce.features.module.modules.exploit.AbortBreaking;
-import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
-import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
-import net.ccbluex.liquidbounce.injection.backend.EnumFacingImplKt;
-import net.ccbluex.liquidbounce.injection.backend.GuiScreenImplKt;
-import net.ccbluex.liquidbounce.injection.backend.WorldClientImplKt;
-import net.ccbluex.liquidbounce.injection.backend.WrapperImpl;
-import net.ccbluex.liquidbounce.injection.backend.utils.BackendExtentionsKt;
-import net.ccbluex.liquidbounce.injection.forge.SplashProgressLock;
-import net.ccbluex.liquidbounce.ui.client.GuiMainMenu;
-import net.ccbluex.liquidbounce.ui.client.GuiUpdate;
-import net.ccbluex.liquidbounce.ui.client.GuiWelcome;
-import net.ccbluex.liquidbounce.utils.CPSCounter;
-import net.ccbluex.liquidbounce.utils.render.IconUtils;
-import net.ccbluex.liquidbounce.utils.render.MiniMapRegister;
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Util;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.Sys;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.nio.ByteBuffer;
-
-@Mixin(Minecraft.class)
-@SideOnly(Side.CLIENT)
+//@Mixin(Minecraft.class)
+//@SideOnly(Side.CLIENT)
+@Deprecated
 public abstract class MixinMinecraft {
-
+    /*
     @Shadow
     public GuiScreen currentScreen;
 
@@ -232,11 +188,12 @@ public abstract class MixinMinecraft {
         }
 
         LiquidBounce.eventManager.callEvent(new WorldEvent(p_loadWorld_1_ == null ? null : WorldClientImplKt.wrap(p_loadWorld_1_)));
-    }
+    }/*
 
     /**
      * @author CCBlueX
      */
+    /*
     @Overwrite
     private void sendClickBlockToController(boolean leftClick) {
         if(!leftClick)
@@ -259,12 +216,13 @@ public abstract class MixinMinecraft {
             }
         }
     }
-
+    /*
     /**
      * @author
      */
+    /*
     @Overwrite
     public int getLimitFramerate() {
         return this.theWorld == null && this.currentScreen != null ? 60 : this.gameSettings.limitFramerate;
-    }
+    }*/
 }

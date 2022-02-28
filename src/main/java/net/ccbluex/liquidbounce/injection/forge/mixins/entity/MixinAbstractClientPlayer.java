@@ -16,19 +16,13 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.init.Items;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import java.util.Objects;
 
-@Mixin(AbstractClientPlayer.class)
-@SideOnly(Side.CLIENT)
+//@Mixin(AbstractClientPlayer.class)
+//@SideOnly(Side.CLIENT)
+@Deprecated
 public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
-
+    /*
     private CapeInfo capeInfo;
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
@@ -78,5 +72,5 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
 
             callbackInfoReturnable.setReturnValue(DefaultPlayerSkin.getDefaultSkin(getUniqueID()));
         }
-    }
+    }*/
 }

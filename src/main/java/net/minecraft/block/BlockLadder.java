@@ -1,5 +1,7 @@
 package net.minecraft.block;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.movement.FastClimb;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -13,6 +15,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import java.util.Objects;
 
 public class BlockLadder extends Block
 {
@@ -37,28 +41,23 @@ public class BlockLadder extends Block
         return super.getSelectedBoundingBox(worldIn, pos);
     }
 
-    public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
-    {
-        IBlockState iblockstate = worldIn.getBlockState(pos);
+    public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos) {
+        final IBlockState iblockstate = worldIn.getBlockState(pos);
 
-        if (iblockstate.getBlock() == this)
-        {
-            float f = 0.125F;
+        if(iblockstate.getBlock() instanceof BlockLadder) {
+            final FastClimb fastClimb = (FastClimb) LiquidBounce.moduleManager.getModule(FastClimb.class);
+            final float f = Objects.requireNonNull(fastClimb).getState() && fastClimb.getModeValue().get().equalsIgnoreCase("AAC3.0.0") ? 0.99f : 0.125f;
 
-            switch ((EnumFacing)iblockstate.getValue(FACING))
-            {
+            switch(iblockstate.getValue(FACING)) {
                 case NORTH:
                     this.setBlockBounds(0.0F, 0.0F, 1.0F - f, 1.0F, 1.0F, 1.0F);
                     break;
-
                 case SOUTH:
                     this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, f);
                     break;
-
                 case WEST:
                     this.setBlockBounds(1.0F - f, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
                     break;
-
                 case EAST:
                 default:
                     this.setBlockBounds(0.0F, 0.0F, 0.0F, f, 1.0F, 1.0F);

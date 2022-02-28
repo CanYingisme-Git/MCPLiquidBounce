@@ -2,6 +2,14 @@ package net.minecraft.client.entity;
 
 import com.mojang.authlib.GameProfile;
 import java.io.File;
+import java.util.Objects;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.cape.CapeAPI;
+import net.ccbluex.liquidbounce.cape.CapeInfo;
+import net.ccbluex.liquidbounce.features.module.modules.misc.NameProtect;
+import net.ccbluex.liquidbounce.features.module.modules.render.NoFOV;
+import net.ccbluex.liquidbounce.injection.backend.ResourceLocationImplKt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.ImageBufferDownload;
@@ -87,12 +95,29 @@ public abstract class AbstractClientPlayer extends EntityPlayer
      */
     public ResourceLocation getLocationSkin()
     {
+        {
+            final NameProtect nameProtect = (NameProtect) LiquidBounce.moduleManager.getModule(NameProtect.class);
+
+            if (Objects.requireNonNull(nameProtect).getState() && nameProtect.skinProtectValue.get()) {
+                if (!nameProtect.allPlayersValue.get() && !Objects.equals(getGameProfile().getName(), Minecraft.getMinecraft().thePlayer.getGameProfile().getName())) {
+                    NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
+                    return networkplayerinfo == null ? DefaultPlayerSkin.getDefaultSkin(this.getUniqueID()) : networkplayerinfo.getLocationSkin();
+                }
+                return (DefaultPlayerSkin.getDefaultSkin(getUniqueID()));
+            }
+        }
         NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
         return networkplayerinfo == null ? DefaultPlayerSkin.getDefaultSkin(this.getUniqueID()) : networkplayerinfo.getLocationSkin();
     }
-
+    private CapeInfo capeInfo;
     public ResourceLocation getLocationCape()
     {
+
+        if (capeInfo == null)
+            capeInfo = CapeAPI.INSTANCE.loadCape(getUniqueID());
+
+        if(capeInfo != null && capeInfo.isCapeAvailable())
+            return (ResourceLocationImplKt.unwrap(capeInfo.getResourceLocation()));
         if (!Config.isShowCapes())
         {
             return null;
@@ -149,6 +174,27 @@ public abstract class AbstractClientPlayer extends EntityPlayer
 
     public float getFovModifier()
     {
+        {
+            final NoFOV fovModule = (NoFOV) LiquidBounce.moduleManager.getModule(NoFOV.class);
+
+            if (Objects.requireNonNull(fovModule).getState()) {
+                float newFOV = fovModule.getFovValue().get();
+
+                if (!this.isUsingItem()) {
+                    return (newFOV);
+                }
+
+                if (this.getItemInUse().getItem() != Items.bow) {
+                    return (newFOV);
+                }
+
+                int i = this.getItemInUseDuration();
+                float f1 = (float) i / 20.0f;
+                f1 = f1 > 1.0f ? 1.0f : f1 * f1;
+                newFOV *= 1.0f - f1 * 0.15f;
+                return (newFOV);
+            }
+        }
         float f = 1.0F;
 
         if (this.capabilities.isFlying)

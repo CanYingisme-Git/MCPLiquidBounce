@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import java.util.List;
+
+import al.nya.mixin.CallbackInfo;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -57,8 +59,19 @@ public class BlockAnvil extends BlockFalling
      */
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
+        CallbackInfo cb = new CallbackInfo<IBlockState>(null);
+        injectAnvilCrashFix(worldIn,pos,facing,hitX,hitY,hitZ,meta,placer,cb);
+        if (cb.isCancel()){
+            return (IBlockState) cb.getValue();
+        }
         EnumFacing enumfacing = placer.getHorizontalFacing().rotateY();
         return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer).withProperty(FACING, enumfacing).withProperty(DAMAGE, Integer.valueOf(meta >> 2));
+    }
+    private void injectAnvilCrashFix(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, CallbackInfo<IBlockState> cir) {
+        if (((meta >> 2) & ~0x3) != 0) {
+            cir.setReturnValue(super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer).withProperty(BlockAnvil.FACING, placer.getHorizontalFacing().rotateY()).withProperty(BlockAnvil.DAMAGE, 2));
+            cir.cancel();
+        }
     }
 
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)

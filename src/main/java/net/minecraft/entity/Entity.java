@@ -1,9 +1,15 @@
 package net.minecraft.entity;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.StrafeEvent;
+import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.NoPitchLimit;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -12,6 +18,7 @@ import net.minecraft.block.BlockWall;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockPattern;
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.crash.CrashReport;
@@ -297,7 +304,9 @@ public abstract class Entity implements ICommandSender
     {
         return this.entityId;
     }
-
+    public int getFire() {
+        return fire;
+    }
     /**
      * Keeps moving the entity up so it isn't colliding with blocks and other requirements for this entity to be spawned
      * (only actually used on players though its also on Entity)
@@ -378,6 +387,16 @@ public abstract class Entity implements ICommandSender
      */
     public void setAngles(float yaw, float pitch)
     {
+        if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NoPitchLimit.class)).getState()) {
+
+            float f = this.rotationPitch;
+            float f1 = this.rotationYaw;
+            this.rotationYaw = (float) ((double) this.rotationYaw + (double) yaw * 0.15D);
+            this.rotationPitch = (float) ((double) this.rotationPitch - (double) pitch * 0.15D);
+            this.prevRotationPitch += this.rotationPitch - f;
+            this.prevRotationYaw += this.rotationYaw - f1;
+            return;
+        }
         float f = this.rotationPitch;
         float f1 = this.rotationYaw;
         this.rotationYaw = (float)((double)this.rotationYaw + (double)yaw * 0.15D);
@@ -1215,6 +1234,14 @@ public abstract class Entity implements ICommandSender
      */
     public void moveFlying(float strafe, float forward, float friction)
     {
+        if ((Object) this != Minecraft.getMinecraft().thePlayer)
+            return;
+
+        final StrafeEvent strafeEvent = new StrafeEvent(strafe, forward, friction);
+        LiquidBounce.eventManager.callEvent(strafeEvent);
+
+        if (strafeEvent.isCancelled())
+            return;
         float f = strafe * strafe + forward * forward;
 
         if (f >= 1.0E-4F)
@@ -2030,6 +2057,10 @@ public abstract class Entity implements ICommandSender
 
     public float getCollisionBorderSize()
     {
+        final HitBox hitBox = (HitBox) LiquidBounce.moduleManager.getModule(HitBox.class);
+
+        if (Objects.requireNonNull(hitBox).getState())
+            return (0.1F + hitBox.getSizeValue().get());
         return 0.1F;
     }
 

@@ -39,23 +39,15 @@ import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
 
 import java.util.List;
 
-@Mixin(EntityPlayerSP.class)
-@SideOnly(Side.CLIENT)
+//@Mixin(EntityPlayerSP.class)
+//@SideOnly(Side.CLIENT)
+@Deprecated
 public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
-
+    /*
     @Shadow
     public boolean serverSprintState;
 
@@ -88,7 +80,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     @Shadow
     public abstract void sendPlayerAbilities();
-
+    /*
     @Shadow
     public float horseJumpPower;
 
@@ -135,6 +127,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     /**
      * @author CCBlueX
      */
+    /*
     @Overwrite
     public void onUpdateWalkingPlayer() {
         try {
@@ -253,6 +246,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     /**
      * @author CCBlueX
      */
+    /*
     @Overwrite
     public void onLivingUpdate() {
         LiquidBounce.eventManager.callEvent(new UpdateEvent());
@@ -718,5 +712,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             this.worldObj.theProfiler.endSection();
         }
     }
+
+     */
 }
 

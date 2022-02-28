@@ -5,6 +5,10 @@ import com.google.common.collect.Maps;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.Render2DEvent;
+import net.ccbluex.liquidbounce.utils.ClassUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.src.Config;
 import net.optifine.Lagometer;
@@ -57,6 +61,9 @@ public class Profiler
      */
     public void startSection(String name)
     {
+        if (name.equals("bossHealth") && ClassUtils.hasClass("net.labymod.api.LabyModAPI")) {
+            LiquidBounce.eventManager.callEvent(new Render2DEvent(0F));
+        }
         if (Lagometer.isActive())
         {
             int i = name.hashCode();

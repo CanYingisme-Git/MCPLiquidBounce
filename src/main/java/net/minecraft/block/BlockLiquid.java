@@ -1,6 +1,12 @@
 package net.minecraft.block;
 
+import java.util.Objects;
 import java.util.Random;
+
+import al.nya.mixin.CallbackInfo;
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
+import net.ccbluex.liquidbounce.features.module.modules.world.Liquids;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
@@ -81,7 +87,14 @@ public abstract class BlockLiquid extends Block
 
     public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid)
     {
+        CallbackInfo cb = new CallbackInfo<Boolean>(null);
+        onCollideCheck(cb);
+        if (cb != null) return (boolean) cb.getValue();
         return hitIfLiquid && ((Integer)state.getValue(LEVEL)).intValue() == 0;
+    }
+    private void onCollideCheck(CallbackInfo<Boolean> callbackInfoReturnable) {
+        if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(Liquids.class)).getState())
+            callbackInfoReturnable.setReturnValue(true);
     }
 
     /**
@@ -198,7 +211,20 @@ public abstract class BlockLiquid extends Block
 
     public Vec3 modifyAcceleration(World worldIn, BlockPos pos, Entity entityIn, Vec3 motion)
     {
+        CallbackInfo callbackInfo = new CallbackInfo<Vec3>(null);
+        onModifyAcceleration(callbackInfo);
+        if (callbackInfo.getValue() != null){
+            motion.add(this.getFlowVector(worldIn, pos));
+            return (Vec3) callbackInfo.getValue();
+        }
         return motion.add(this.getFlowVector(worldIn, pos));
+    }
+    private void onModifyAcceleration(CallbackInfo<Vec3> callbackInfoReturnable) {
+        final NoSlow noSlow = (NoSlow) LiquidBounce.moduleManager.getModule(NoSlow.class);
+
+        if (noSlow.getState() && noSlow.getLiquidPushValue().get()) {
+            callbackInfoReturnable.setReturnValue(new Vec3(0.0D, 0.0D, 0.0D));
+        }
     }
 
     /**

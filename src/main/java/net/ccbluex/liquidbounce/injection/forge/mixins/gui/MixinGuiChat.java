@@ -11,23 +11,17 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.IChatComponent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.input.Mouse;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 
 import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 
-@Mixin(GuiChat.class)
-@SideOnly(Side.CLIENT)
+//@Mixin(GuiChat.class)
+//@SideOnly(Side.CLIENT)
+@Deprecated
 public abstract class MixinGuiChat extends MixinGuiScreen {
+    /*
     @Shadow
     protected GuiTextField inputField;
 
@@ -83,6 +77,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
      *
      * @author NurMarvin
      */
+    /*
     @Inject(method = "sendAutocompleteRequest", at = @At("HEAD"), cancellable = true)
     private void handleClientCommandCompletion(String full, final String ignored, CallbackInfo callbackInfo) {
         if (LiquidBounce.commandManager.autoComplete(full)) {
@@ -105,6 +100,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
      *
      * @author derech1e
      */
+    /*
     @Inject(method = "onAutocompleteResponse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiChat;autocompletePlayerNames()V", shift = At.Shift.BEFORE), cancellable = true)
     private void onAutocompleteResponse(String[] autoCompleteResponse, CallbackInfo callbackInfo) {
         if (LiquidBounce.commandManager.getLatestAutoComplete().length != 0) callbackInfo.cancel();
@@ -113,6 +109,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     /**
      * @author CCBlueX
      */
+    /*
     @Overwrite
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         Gui.drawRect(2, this.height - (int) fade, this.width - 2, this.height, Integer.MIN_VALUE);
@@ -132,4 +129,6 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
         if (ichatcomponent != null)
             this.handleComponentHover(ichatcomponent, mouseX, mouseY);
     }
+
+     */
 }

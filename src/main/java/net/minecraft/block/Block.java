@@ -1,7 +1,19 @@
 package net.minecraft.block;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.BlockBBEvent;
+import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.GhostHand;
+import net.ccbluex.liquidbounce.features.module.modules.player.NoFall;
+import net.ccbluex.liquidbounce.features.module.modules.render.XRay;
+import net.ccbluex.liquidbounce.features.module.modules.world.NoSlowBreak;
+import net.ccbluex.liquidbounce.injection.backend.AxisAlignedBBImplKt;
+import net.ccbluex.liquidbounce.injection.backend.BlockImplKt;
+import net.ccbluex.liquidbounce.injection.backend.utils.BackendExtentionsKt;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -465,6 +477,11 @@ public class Block
 
     public boolean shouldSideBeRendered(IBlockAccess worldIn, BlockPos pos, EnumFacing side)
     {
+        final XRay xray = (XRay) LiquidBounce.moduleManager.getModule(XRay.class);
+
+        if (Objects.requireNonNull(xray).getState()){
+            return xray.getXrayBlocks().contains(this);
+        }
         return side == EnumFacing.DOWN && this.minY > 0.0D ? true : (side == EnumFacing.UP && this.maxY < 1.0D ? true : (side == EnumFacing.NORTH && this.minZ > 0.0D ? true : (side == EnumFacing.SOUTH && this.maxZ < 1.0D ? true : (side == EnumFacing.WEST && this.minX > 0.0D ? true : (side == EnumFacing.EAST && this.maxX < 1.0D ? true : !worldIn.getBlockState(pos).getBlock().isOpaqueCube())))));
     }
 
@@ -489,11 +506,13 @@ public class Block
     public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
     {
         AxisAlignedBB axisalignedbb = this.getCollisionBoundingBox(worldIn, pos, state);
+        BlockBBEvent blockBBEvent = new BlockBBEvent(BackendExtentionsKt.wrap(pos), BlockImplKt.wrap(blockState.getBlock()), axisalignedbb == null ? null : AxisAlignedBBImplKt.wrap(axisalignedbb));
+        LiquidBounce.eventManager.callEvent(blockBBEvent);
+
+        axisalignedbb = blockBBEvent.getBoundingBox() == null ? null : AxisAlignedBBImplKt.unwrap(blockBBEvent.getBoundingBox());
 
         if (axisalignedbb != null && mask.intersectsWith(axisalignedbb))
-        {
             list.add(axisalignedbb);
-        }
     }
 
     public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state)
@@ -519,6 +538,11 @@ public class Block
      */
     public boolean isCollidable()
     {
+        final GhostHand ghostHand = (GhostHand) LiquidBounce.moduleManager.getModule(GhostHand.class);
+
+        if (Objects.requireNonNull(ghostHand).getState() && !(ghostHand.getBlockValue().get() == Block.getIdFromBlock((Block) (Object) this))){
+            return false;
+        }
         return true;
     }
 
@@ -592,7 +616,34 @@ public class Block
     public float getPlayerRelativeBlockHardness(EntityPlayer playerIn, World worldIn, BlockPos pos)
     {
         float f = this.getBlockHardness(worldIn, pos);
-        return f < 0.0F ? 0.0F : (!playerIn.canHarvestBlock(this) ? playerIn.getToolDigEfficiency(this) / f / 100.0F : playerIn.getToolDigEfficiency(this) / f / 30.0F);
+        return modifyBreakSpeed(playerIn,worldIn,pos,
+                f < 0.0F ? 0.0F : (!playerIn.canHarvestBlock(this) ? playerIn.getToolDigEfficiency(this) / f / 100.0F : playerIn.getToolDigEfficiency(this) / f / 30.0F));
+    }
+    public float modifyBreakSpeed(EntityPlayer playerIn, World worldIn, BlockPos pos, float returValue) {
+        float f = returValue;
+
+        // NoSlowBreak
+        final NoSlowBreak noSlowBreak = (NoSlowBreak) LiquidBounce.moduleManager.getModule(NoSlowBreak.class);
+        if (Objects.requireNonNull(noSlowBreak).getState()) {
+            if (noSlowBreak.getWaterValue().get() && playerIn.isInsideOfMaterial(Material.water) &&
+                    !EnchantmentHelper.getAquaAffinityModifier(playerIn)) {
+                f *= 5.0F;
+            }
+
+            if (noSlowBreak.getAirValue().get() && !playerIn.onGround) {
+                f *= 5.0F;
+            }
+        } else if (playerIn.onGround) { // NoGround
+            final NoFall noFall = (NoFall) LiquidBounce.moduleManager.getModule(NoFall.class);
+            final Criticals criticals = (Criticals) LiquidBounce.moduleManager.getModule(Criticals.class);
+
+            if (Objects.requireNonNull(noFall).getState() && noFall.modeValue.get().equalsIgnoreCase("NoGround") ||
+                    Objects.requireNonNull(criticals).getState() && criticals.getModeValue().get().equalsIgnoreCase("NoGround")) {
+                f /= 5F;
+            }
+        }
+
+        return f;
     }
 
     /**
@@ -1107,6 +1158,9 @@ public class Block
      */
     public float getAmbientOcclusionLightValue()
     {
+        if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(XRay.class)).getState()){
+            return 1F
+        }
         return this.isBlockNormalCube() ? 0.2F : 1.0F;
     }
 

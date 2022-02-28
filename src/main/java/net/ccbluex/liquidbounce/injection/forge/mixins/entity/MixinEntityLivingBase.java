@@ -20,19 +20,13 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Objects;
 
-@Mixin(EntityLivingBase.class)
+//@Mixin(EntityLivingBase.class)
+@Deprecated
 public abstract class MixinEntityLivingBase extends MixinEntity {
-
+    /*
     @Shadow
     protected abstract float getJumpUpwardsMotion();
 
@@ -66,6 +60,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     /**
      * @author CCBlueX
      */
+    /*
     @Overwrite
     protected void jump() {
         final JumpEvent jumpEvent = new JumpEvent(this.getJumpUpwardsMotion());
@@ -121,5 +116,5 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
         if ((p_isPotionActive_1_ == Potion.confusion || p_isPotionActive_1_ == Potion.blindness) && Objects.requireNonNull(antiBlind).getState() && antiBlind.getConfusionEffect().get())
             callbackInfoReturnable.setReturnValue(false);
-    }
+    }*/
 }

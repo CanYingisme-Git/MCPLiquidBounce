@@ -1,10 +1,16 @@
 package net.minecraft.client.gui;
 
+import net.ccbluex.liquidbounce.injection.backend.FontRendererImpl;
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
+import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+
+import java.awt.*;
 
 public class GuiButton extends Gui
 {
@@ -71,37 +77,57 @@ public class GuiButton extends Gui
 
         return i;
     }
-
+    private float cut;
+    private float alpha;
     /**
      * Draws this button to the screen.
      */
     public void drawButton(Minecraft mc, int mouseX, int mouseY)
     {
-        if (this.visible)
-        {
-            FontRenderer fontrenderer = mc.fontRendererObj;
+        if (visible) {
+            final FontRenderer fontRenderer =
+                    mc.getLanguageManager().isCurrentLocaleUnicode() ? mc.fontRendererObj : ((FontRendererImpl) Fonts.font35).getWrapped();
+            hovered = (mouseX >= this.xPosition && mouseY >= this.yPosition &&
+                    mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height);
+
+            final int delta = RenderUtils.deltaTime;
+
+            if (enabled && hovered) {
+                cut += 0.05F * delta;
+
+                if (cut >= 4) cut = 4;
+
+                alpha += 0.3F * delta;
+
+                if (alpha >= 210) alpha = 210;
+            } else {
+                cut -= 0.05F * delta;
+
+                if (cut <= 0) cut = 0;
+
+                alpha -= 0.3F * delta;
+
+                if (alpha <= 120) alpha = 120;
+            }
+
+            Gui.drawRect(this.xPosition + (int) this.cut, this.yPosition,
+                    this.xPosition + this.width - (int) this.cut, this.yPosition + this.height,
+                    this.enabled ? new Color(0F, 0F, 0F, this.alpha / 255F).getRGB() :
+                            new Color(0.5F, 0.5F, 0.5F, 0.5F).getRGB());
+
             mc.getTextureManager().bindTexture(buttonTextures);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
-            int i = this.getHoverState(this.hovered);
-            GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-            GlStateManager.blendFunc(770, 771);
-            this.drawTexturedModalRect(this.xPosition, this.yPosition, 0, 46 + i * 20, this.width / 2, this.height);
-            this.drawTexturedModalRect(this.xPosition + this.width / 2, this.yPosition, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
-            this.mouseDragged(mc, mouseX, mouseY);
-            int j = 14737632;
+            mouseDragged(mc, mouseX, mouseY);
 
-            if (!this.enabled)
-            {
-                j = 10526880;
-            }
-            else if (this.hovered)
-            {
-                j = 16777120;
-            }
+            AWTFontRenderer.Companion.setAssumeNonVolatile(true);
 
-            this.drawCenteredString(fontrenderer, this.displayString, this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, j);
+            fontRenderer.drawStringWithShadow(displayString,
+                    (float) ((this.xPosition + this.width / 2) -
+                            fontRenderer.getStringWidth(displayString) / 2),
+                    this.yPosition + (this.height - 5) / 2F, 14737632);
+
+            AWTFontRenderer.Companion.setAssumeNonVolatile(false);
+
+            GlStateManager.resetColor();
         }
     }
 

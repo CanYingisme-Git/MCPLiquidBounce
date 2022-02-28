@@ -3,15 +3,19 @@ package net.minecraft.entity;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+
+import java.util.*;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.JumpEvent;
+import net.ccbluex.liquidbounce.features.module.modules.movement.AirJump;
+import net.ccbluex.liquidbounce.features.module.modules.movement.LiquidWalk;
+import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
+import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.BaseAttributeMap;
@@ -728,6 +732,10 @@ public abstract class EntityLivingBase extends Entity
 
     public boolean isPotionActive(Potion potionIn)
     {
+        final AntiBlind antiBlind = (AntiBlind) LiquidBounce.moduleManager.getModule(AntiBlind.class);
+
+        if ((potionIn == Potion.confusion || potionIn == Potion.blindness) && Objects.requireNonNull(antiBlind).getState() && antiBlind.getConfusionEffect().get())
+            return (false);
         return this.activePotionsMap.containsKey(Integer.valueOf(potionIn.id));
     }
 
@@ -1558,7 +1566,7 @@ public abstract class EntityLivingBase extends Entity
     /**
      * Causes this entity to do an upwards motion (jumping).
      */
-    protected void jump()
+    /*protected void jump()
     {
         this.motionY = (double)this.getJumpUpwardsMotion();
 
@@ -1572,6 +1580,25 @@ public abstract class EntityLivingBase extends Entity
             float f = this.rotationYaw * 0.017453292F;
             this.motionX -= (double)(MathHelper.sin(f) * 0.2F);
             this.motionZ += (double)(MathHelper.cos(f) * 0.2F);
+        }
+
+        this.isAirBorne = true;
+    }*/
+    protected void jump() {
+        final JumpEvent jumpEvent = new JumpEvent(this.getJumpUpwardsMotion());
+        LiquidBounce.eventManager.callEvent(jumpEvent);
+        if(jumpEvent.isCancelled())
+            return;
+
+        this.motionY = jumpEvent.getMotion();
+
+        if(this.isPotionActive(Potion.jump))
+            this.motionY += (float) (this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F;
+
+        if(this.isSprinting()) {
+            float f = this.rotationYaw * 0.017453292F;
+            this.motionX -= MathHelper.sin(f) * 0.2F;
+            this.motionZ += MathHelper.cos(f) * 0.2F;
         }
 
         this.isAirBorne = true;
@@ -1941,6 +1968,8 @@ public abstract class EntityLivingBase extends Entity
      */
     public void onLivingUpdate()
     {
+        if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NoJumpDelay.class)).getState())
+            jumpTicks = 0;
         if (this.jumpTicks > 0)
         {
             --this.jumpTicks;
@@ -1985,6 +2014,17 @@ public abstract class EntityLivingBase extends Entity
         if (this.isMovementBlocked())
         {
             this.isJumping = false;
+            if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(AirJump.class)).getState() && isJumping && this.jumpTicks == 0) {
+                this.jump();
+                this.jumpTicks = 10;
+            }
+
+            final LiquidWalk liquidWalk = (LiquidWalk) LiquidBounce.moduleManager.getModule(LiquidWalk.class);
+
+            if (Objects.requireNonNull(liquidWalk).getState() && !isJumping && !isSneaking() && isInWater() &&
+                    liquidWalk.getModeValue().get().equalsIgnoreCase("Swim")) {
+                this.updateAITick();
+            }
             this.moveStrafing = 0.0F;
             this.moveForward = 0.0F;
             this.randomYawVelocity = 0.0F;
@@ -2164,6 +2204,8 @@ public abstract class EntityLivingBase extends Entity
      */
     public Vec3 getLook(float partialTicks)
     {
+        if(((EntityLivingBase) (Object) this) instanceof EntityPlayerSP)
+            return (getVectorForRotation(this.rotationPitch, this.rotationYaw));
         if (partialTicks == 1.0F)
         {
             return this.getVectorForRotation(this.rotationPitch, this.rotationYawHead);

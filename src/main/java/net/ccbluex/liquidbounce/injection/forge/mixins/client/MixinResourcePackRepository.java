@@ -5,25 +5,11 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
-import com.google.common.collect.Lists;
-import net.minecraft.client.resources.ResourcePackRepository;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.comparator.LastModifiedFileComparator;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
-@Mixin(ResourcePackRepository.class)
+//@Mixin(ResourcePackRepository.class)
 public class MixinResourcePackRepository {
-
+    /*
     @Shadow
     @Final
     private File dirServerResourcepacks;
@@ -36,6 +22,7 @@ public class MixinResourcePackRepository {
      * @author Mojang
      * @reason Fix a bug
      */
+    /*
     @Overwrite
     private void deleteOldServerResourcesPacks() {
         try {
@@ -54,5 +41,5 @@ public class MixinResourcePackRepository {
         }catch(final Throwable e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }

@@ -1,8 +1,14 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
+
+import java.awt.*;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.network.play.client.C14PacketTabComplete;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
@@ -24,6 +30,8 @@ public class GuiChat extends GuiScreen
      * keeps position of which chat message you will select when you press up, (does not increase for duplicated
      * messages sent immediately after each other)
      */
+    private float yPosOfInputField;
+    private float fade = 0;
     private int sentHistoryCursor = -1;
     private boolean playerNamesFound;
     private boolean waitingOnAutocomplete;
@@ -61,6 +69,8 @@ public class GuiChat extends GuiScreen
         this.inputField.setFocused(true);
         this.inputField.setText(this.defaultInputFieldText);
         this.inputField.setCanLoseFocus(false);
+        inputField.yPosition = height + 1;
+        yPosOfInputField = inputField.yPosition;
     }
 
     /**
@@ -77,6 +87,15 @@ public class GuiChat extends GuiScreen
      */
     public void updateScreen()
     {
+        final int delta = RenderUtils.deltaTime;
+
+        if (fade < 14) fade += 0.4F * delta;
+        if (fade > 14) fade = 14;
+
+        if (yPosOfInputField > height - 12) yPosOfInputField -= 0.4F * delta;
+        if (yPosOfInputField < height - 12) yPosOfInputField = height - 12;
+
+        inputField.yPosition = (int) yPosOfInputField;
         this.inputField.updateCursorCounter();
     }
 
@@ -135,6 +154,13 @@ public class GuiChat extends GuiScreen
 
             this.mc.displayGuiScreen((GuiScreen)null);
         }
+        if (!inputField.getText().startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) return;
+        LiquidBounce.commandManager.autoComplete(inputField.getText());
+
+        if (!inputField.getText().startsWith(LiquidBounce.commandManager.getPrefix() + "lc"))
+            inputField.setMaxStringLength(10000);
+        else
+            inputField.setMaxStringLength(100);
     }
 
     /**
@@ -205,6 +231,8 @@ public class GuiChat extends GuiScreen
 
     public void autocompletePlayerNames()
     {
+        foundPlayerNames.sort(
+                Comparator.comparing(s -> !LiquidBounce.fileManager.friendsConfig.isFriend(s)));
         if (this.playerNamesFound)
         {
             this.inputField.deleteFromCursor(this.inputField.func_146197_a(-1, this.inputField.getCursorPosition(), false) - this.inputField.getCursorPosition());
@@ -254,6 +282,18 @@ public class GuiChat extends GuiScreen
 
     private void sendAutocompleteRequest(String p_146405_1_, String p_146405_2_)
     {
+        if (LiquidBounce.commandManager.autoComplete(p_146405_1_)) {
+            waitingOnAutocomplete = true;
+
+            String[] latestAutoComplete = LiquidBounce.commandManager.getLatestAutoComplete();
+
+            if (p_146405_1_.toLowerCase().endsWith(latestAutoComplete[latestAutoComplete.length - 1].toLowerCase()))
+                return;
+
+            this.onAutocompleteResponse(latestAutoComplete);
+
+            return;
+        }
         if (p_146405_1_.length() >= 1)
         {
             BlockPos blockpos = null;
@@ -305,16 +345,22 @@ public class GuiChat extends GuiScreen
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        drawRect(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
+        Gui.drawRect(2, this.height - (int) fade, this.width - 2, this.height, Integer.MIN_VALUE);
         this.inputField.drawTextBox();
-        IChatComponent ichatcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
 
-        if (ichatcomponent != null && ichatcomponent.getChatStyle().getChatHoverEvent() != null)
-        {
-            this.handleComponentHover(ichatcomponent, mouseX, mouseY);
+        if (LiquidBounce.commandManager.getLatestAutoComplete().length > 0 && !inputField.getText().isEmpty() && inputField.getText().startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
+            String[] latestAutoComplete = LiquidBounce.commandManager.getLatestAutoComplete();
+            String[] textArray = inputField.getText().split(" ");
+            String trimmedString = latestAutoComplete[0].replaceFirst("(?i)" + textArray[textArray.length - 1], "");
+
+            mc.fontRendererObj.drawStringWithShadow(trimmedString, inputField.xPosition + mc.fontRendererObj.getStringWidth(inputField.getText()), inputField.yPosition, new Color(165, 165, 165).getRGB());
         }
 
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        IChatComponent ichatcomponent =
+                this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
+
+        if (ichatcomponent != null)
+            this.handleComponentHover(ichatcomponent, mouseX, mouseY);
     }
 
     public void onAutocompleteResponse(String[] p_146406_1_)
@@ -343,6 +389,7 @@ public class GuiChat extends GuiScreen
             else if (this.foundPlayerNames.size() > 0)
             {
                 this.playerNamesFound = true;
+                if (LiquidBounce.commandManager.getLatestAutoComplete().length != 0) return;
                 this.autocompletePlayerNames();
             }
         }

@@ -35,6 +35,25 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import javax.imageio.ImageIO;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.*;
+import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.AbortBreaking;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
+import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
+import net.ccbluex.liquidbounce.injection.backend.EnumFacingImplKt;
+import net.ccbluex.liquidbounce.injection.backend.GuiScreenImplKt;
+import net.ccbluex.liquidbounce.injection.backend.WorldClientImplKt;
+import net.ccbluex.liquidbounce.injection.backend.WrapperImpl;
+import net.ccbluex.liquidbounce.injection.backend.utils.BackendExtentionsKt;
+import net.ccbluex.liquidbounce.injection.forge.SplashProgressLock;
+import net.ccbluex.liquidbounce.ui.client.GuiUpdate;
+import net.ccbluex.liquidbounce.ui.client.GuiWelcome;
+import net.ccbluex.liquidbounce.utils.CPSCounter;
+import net.ccbluex.liquidbounce.utils.render.IconUtils;
+import net.ccbluex.liquidbounce.utils.render.MiniMapRegister;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MusicTicker;
@@ -387,10 +406,16 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         ImageIO.setUseCache(false);
         Bootstrap.register();
+        LiquidBounce.wrapper = WrapperImpl.INSTANCE;
     }
 
     public void run()
     {
+        if (displayWidth < 1067)
+            displayWidth = 1067;
+
+        if (displayHeight < 622)
+            displayHeight = 622;
         this.running = true;
 
         try
@@ -464,6 +489,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
      */
     private void startGame() throws LWJGLException, IOException
     {
+
         this.gameSettings = new GameSettings(this, this.mcDataDir);
         this.defaultResourcePacks.add(this.mcDefaultResourcePack);
         this.startTimerHackThread();
@@ -487,6 +513,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         this.mcLanguageManager = new LanguageManager(this.metadataSerializer_, this.gameSettings.language);
         this.mcResourceManager.registerReloadListener(this.mcLanguageManager);
         this.refreshResources();
+        waitForLock();
         this.renderEngine = new TextureManager(this.mcResourceManager);
         this.mcResourceManager.registerReloadListener(this.renderEngine);
         this.drawSplashScreen(this.renderEngine);
@@ -537,6 +564,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         GlStateManager.loadIdentity();
         GlStateManager.matrixMode(5888);
         this.checkGLError("Startup");
+        LiquidBounce.INSTANCE.startClient();
         this.textureMapBlocks = new TextureMap("textures");
         this.textureMapBlocks.setMipmapLevels(this.gameSettings.mipmapLevels);
         this.renderEngine.loadTickableTexture(TextureMap.locationBlocksTexture, this.textureMapBlocks);
@@ -566,6 +594,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         }
         else
         {
+            if (LiquidBounce.fileManager.firstStart)
+                LiquidBounce.wrapper.getMinecraft().displayGuiScreen(LiquidBounce.wrapper.getClassProvider().wrapGuiScreen(new GuiWelcome()));
+            else if (LiquidBounce.INSTANCE.getLatestVersion() > LiquidBounce.CLIENT_VERSION - (LiquidBounce.IN_DEV ? 1 : 0))
+                LiquidBounce.wrapper.getMinecraft().displayGuiScreen(LiquidBounce.wrapper.getClassProvider().wrapGuiScreen(new GuiUpdate()));
             this.displayGuiScreen(new GuiMainMenu());
         }
 
@@ -590,7 +622,19 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         this.renderGlobal.makeEntityOutlineShader();
     }
+    private void waitForLock() {
+        long end = System.currentTimeMillis() + 20000;
 
+        while (end < System.currentTimeMillis() && SplashProgressLock.INSTANCE.isAnimationRunning()) {
+            synchronized (SplashProgressLock.INSTANCE) {
+                try {
+                    SplashProgressLock.INSTANCE.wait(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
     private void registerMetadataSerializers()
     {
         this.metadataSerializer_.registerMetadataSectionType(new TextureMetadataSectionSerializer(), TextureMetadataSection.class);
@@ -617,6 +661,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     {
         Display.setResizable(true);
         Display.setTitle("Minecraft 1.8.9");
+        Display.setTitle(LiquidBounce.CLIENT_NAME + " b" + LiquidBounce.CLIENT_VERSION + " | " + LiquidBounce.MINECRAFT_VERSION + (LiquidBounce.IN_DEV ? " | DEVELOPMENT BUILD" : ""));
 
         try
         {
@@ -661,6 +706,13 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     private void setWindowIcon()
     {
+        if(Util.getOSType() != Util.EnumOS.OSX) {
+            final ByteBuffer[] liquidBounceFavicon = IconUtils.getFavicon();
+            if(liquidBounceFavicon != null) {
+                Display.setIcon(liquidBounceFavicon);
+                return;
+            }
+        }
         Util.EnumOS util$enumos = Util.getOSType();
 
         if (util$enumos != Util.EnumOS.OSX)
@@ -963,6 +1015,15 @@ public class Minecraft implements IThreadListener, IPlayerUsage
      */
     public void displayGuiScreen(GuiScreen guiScreenIn)
     {
+        if(currentScreen instanceof net.minecraft.client.gui.GuiMainMenu || (currentScreen != null && currentScreen.getClass().getName().startsWith("net.labymod") && currentScreen.getClass().getSimpleName().equals("ModGuiMainMenu"))) {
+            currentScreen = GuiScreenImplKt.unwrap(LiquidBounce.wrapper.getClassProvider().wrapGuiScreen(new net.ccbluex.liquidbounce.ui.client.GuiMainMenu()));
+
+            ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+            currentScreen.setWorldAndResolution(Minecraft.getMinecraft(), scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight());
+            skipRenderWorld = false;
+        }
+
+        LiquidBounce.eventManager.callEvent(new ScreenEvent(currentScreen == null ? null : GuiScreenImplKt.wrap(currentScreen)));
         if (this.currentScreen != null)
         {
             this.currentScreen.onGuiClosed();
@@ -1058,8 +1119,17 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     /**
      * Called repeatedly from run()
      */
+    private long lastFrame = getTime();
+    public long getTime() {
+        return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+    }
     private void runGameLoop() throws IOException
     {
+        final long currentTime = getTime();
+        final int deltaTime = (int) (currentTime - lastFrame);
+        lastFrame = currentTime;
+
+        RenderUtils.deltaTime = deltaTime;
         long i = System.nanoTime();
         this.mcProfiler.startSection("root");
 
@@ -1230,7 +1300,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     public int getLimitFramerate()
     {
-        return this.theWorld == null && this.currentScreen != null ? 30 : this.gameSettings.limitFramerate;
+        return this.theWorld == null && this.currentScreen != null ? 60 : this.gameSettings.limitFramerate;
     }
 
     public boolean isFramerateLimitBelowMax()
@@ -1421,6 +1491,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
      */
     public void shutdown()
     {
+        LiquidBounce.INSTANCE.stopClient();
         this.running = false;
     }
 
@@ -1471,7 +1542,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         }
     }
 
-    private void sendClickBlockToController(boolean leftClick)
+    /*private void sendClickBlockToController(boolean leftClick)
     {
         if (!leftClick)
         {
@@ -1483,6 +1554,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
             {
                 BlockPos blockpos = this.objectMouseOver.getBlockPos();
+                if(this.leftClickCounter == 0 && theWorld.getBlockState(objectMouseOver.getBlockPos()).getBlock().getMaterial() != Material.air) {
+                    LiquidBounce.eventManager.callEvent(new ClickBlockEvent(BackendExtentionsKt.wrap(objectMouseOver.getBlockPos()), EnumFacingImplKt.wrap(this.objectMouseOver.sideHit)));
+                }
 
                 if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air && this.playerController.onPlayerDamageBlock(blockpos, this.objectMouseOver.sideHit))
                 {
@@ -1495,10 +1569,38 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                 this.playerController.resetBlockRemoving();
             }
         }
+    }*/
+    private void sendClickBlockToController(boolean leftClick) {
+        if(!leftClick)
+            this.leftClickCounter = 0;
+
+        if (this.leftClickCounter <= 0 && (!this.thePlayer.isUsingItem() || LiquidBounce.moduleManager.getModule(MultiActions.class).getState())) {
+            if(leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+                BlockPos blockPos = this.objectMouseOver.getBlockPos();
+                if(this.leftClickCounter == 0 && theWorld.getBlockState(objectMouseOver.getBlockPos()).getBlock().getMaterial() != Material.air) {
+                    LiquidBounce.eventManager.callEvent(new ClickBlockEvent(BackendExtentionsKt.wrap(objectMouseOver.getBlockPos()), EnumFacingImplKt.wrap(this.objectMouseOver.sideHit)));
+                }
+
+                if(this.leftClickCounter == 0)
+                    LiquidBounce.eventManager.callEvent(new ClickBlockEvent(BackendExtentionsKt.wrap(blockPos), EnumFacingImplKt.wrap(this.objectMouseOver.sideHit)));
+
+
+                if(this.theWorld.getBlockState(blockPos).getBlock().getMaterial() != Material.air && this.playerController.onPlayerDamageBlock(blockPos, this.objectMouseOver.sideHit)) {
+                    this.effectRenderer.addBlockHitEffects(blockPos, this.objectMouseOver.sideHit);
+                    this.thePlayer.swingItem();
+                }
+            } else if (!LiquidBounce.moduleManager.getModule(AbortBreaking.class).getState()) {
+                this.playerController.resetBlockRemoving();
+            }
+        }
     }
 
     private void clickMouse()
     {
+        CPSCounter.registerClick(CPSCounter.MouseButton.LEFT);
+
+        if (LiquidBounce.moduleManager.getModule(AutoClicker.class).getState())
+            leftClickCounter = 0;
         if (this.leftClickCounter <= 0)
         {
             this.thePlayer.swingItem();
@@ -1550,6 +1652,12 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         if (!this.playerController.func_181040_m())
         {
             this.rightClickDelayTimer = 4;
+            CPSCounter.registerClick(CPSCounter.MouseButton.RIGHT);
+
+            final FastPlace fastPlace = (FastPlace) LiquidBounce.moduleManager.getModule(FastPlace.class);
+
+            if (fastPlace.getState())
+                rightClickDelayTimer = fastPlace.getSpeedValue().get();
             boolean flag = true;
             ItemStack itemstack = this.thePlayer.inventory.getCurrentItem();
 
@@ -1904,6 +2012,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                 }
 
                 this.dispatchKeypresses();
+                if(Keyboard.getEventKeyState() && currentScreen == null)
+                    LiquidBounce.eventManager.callEvent(new KeyEvent(Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey()));
 
                 if (Keyboard.getEventKeyState())
                 {
@@ -2148,6 +2258,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             if (this.thePlayer != null)
             {
                 ++this.joinPlayerCounter;
+                LiquidBounce.eventManager.callEvent(new TickEvent());
 
                 if (this.joinPlayerCounter == 30)
                 {
@@ -2328,6 +2439,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage
      */
     public void loadWorld(WorldClient worldClientIn, String loadingMessage)
     {
+        if (theWorld != null) {
+            MiniMapRegister.INSTANCE.unloadAllChunks();
+        }
+
+        LiquidBounce.eventManager.callEvent(new WorldEvent(worldClientIn == null ? null : WorldClientImplKt.wrap(worldClientIn)));
         if (worldClientIn == null)
         {
             NetHandlerPlayClient nethandlerplayclient = this.getNetHandler();
@@ -2473,6 +2589,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
      */
     private void middleClickMouse()
     {
+        CPSCounter.registerClick(CPSCounter.MouseButton.MIDDLE);
         if (this.objectMouseOver != null)
         {
             boolean flag = this.thePlayer.capabilities.isCreativeMode;

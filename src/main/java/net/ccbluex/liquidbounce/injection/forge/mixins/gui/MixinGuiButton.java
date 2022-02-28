@@ -17,19 +17,14 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 
 import java.awt.*;
 
-@Mixin(GuiButton.class)
-@SideOnly(Side.CLIENT)
+//@Mixin(GuiButton.class)
+//@SideOnly(Side.CLIENT)
+@Deprecated
 public abstract class MixinGuiButton extends Gui {
-
+   /*
    @Shadow
    public boolean visible;
 
@@ -66,6 +61,7 @@ public abstract class MixinGuiButton extends Gui {
    /**
     * @author CCBlueX
     */
+   /*
    @Overwrite
    public void drawButton(Minecraft mc, int mouseX, int mouseY) {
       if (visible) {
@@ -114,4 +110,6 @@ public abstract class MixinGuiButton extends Gui {
          GlStateManager.resetColor();
       }
    }
+
+    */
 }
