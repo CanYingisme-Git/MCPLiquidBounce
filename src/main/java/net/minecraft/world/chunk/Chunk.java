@@ -3,12 +3,16 @@ package net.minecraft.world.chunk;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.render.ProphuntESP;
+import net.ccbluex.liquidbounce.injection.backend.ChunkImplKt;
+import net.ccbluex.liquidbounce.injection.backend.utils.BackendExtentionsKt;
+import net.ccbluex.liquidbounce.utils.render.MiniMapRegister;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -659,6 +663,17 @@ public class Chunk
 
     public IBlockState setBlockState(BlockPos pos, IBlockState state)
     {
+        {
+            MiniMapRegister.INSTANCE.updateChunk(ChunkImplKt.wrap((Chunk) ((Object) this)));
+
+            final ProphuntESP prophuntESP = (ProphuntESP) LiquidBounce.moduleManager.getModule(ProphuntESP.class);
+
+            if (Objects.requireNonNull(prophuntESP).getState()) {
+                synchronized (prophuntESP.getBlocks()) {
+                    prophuntESP.getBlocks().put(BackendExtentionsKt.wrap(pos), System.currentTimeMillis());
+                }
+            }
+        }
         int i = pos.getX() & 15;
         int j = pos.getY();
         int k = pos.getZ() & 15;
@@ -1004,6 +1019,9 @@ public class Chunk
      */
     public void onChunkUnload()
     {
+        {
+            MiniMapRegister.INSTANCE.unloadChunk(this.xPosition, this.zPosition);
+        }
         this.isChunkLoaded = false;
 
         for (TileEntity tileentity : this.chunkTileEntityMap.values())
@@ -1306,6 +1324,9 @@ public class Chunk
      */
     public void fillChunk(byte[] p_177439_1_, int p_177439_2_, boolean p_177439_3_)
     {
+        {
+            MiniMapRegister.INSTANCE.updateChunk(ChunkImplKt.wrap((Chunk) ((Object) this)));
+        }
         int i = 0;
         boolean flag = !this.worldObj.provider.getHasNoSky();
 

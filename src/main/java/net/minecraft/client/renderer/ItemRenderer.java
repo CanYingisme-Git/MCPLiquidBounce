@@ -1,5 +1,9 @@
 package net.minecraft.client.renderer;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
+import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
+import net.ccbluex.liquidbounce.features.module.modules.render.SwingAnimation;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -17,10 +21,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemMap;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.src.Config;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumWorldBlockLayer;
@@ -328,6 +329,60 @@ public class ItemRenderer
      *  
      * @param partialTicks The amount of time passed during the current tick, ranging from 0 to 1.
      */
+    public void renderItemInFirstPerson(float partialTicks) {
+        float f = 1.0F - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
+        EntityPlayerSP abstractclientplayer = this.mc.thePlayer;
+        float f1 = abstractclientplayer.getSwingProgress(partialTicks);
+        float f2 = abstractclientplayer.prevRotationPitch + (abstractclientplayer.rotationPitch - abstractclientplayer.prevRotationPitch) * partialTicks;
+        float f3 = abstractclientplayer.prevRotationYaw + (abstractclientplayer.rotationYaw - abstractclientplayer.prevRotationYaw) * partialTicks;
+        this.func_178101_a(f2, f3);
+        this.func_178109_a(abstractclientplayer);
+        this.func_178110_a((EntityPlayerSP)abstractclientplayer, partialTicks);
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.pushMatrix();
+
+        if(this.itemToRender != null) {
+            final KillAura killAura = (KillAura) LiquidBounce.moduleManager.getModule(KillAura.class);
+
+            if(this.itemToRender.getItem() instanceof net.minecraft.item.ItemMap) {
+                this.renderItemMap(abstractclientplayer, f2, f, f1);
+            } else if (abstractclientplayer.getItemInUseCount() > 0 || (itemToRender.getItem() instanceof ItemSword && killAura.getBlockingStatus())) {
+                EnumAction enumaction = killAura.getBlockingStatus() ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
+
+                switch(enumaction) {
+                    case NONE:
+                        this.transformFirstPersonItem(f, 0.0F);
+                        break;
+                    case EAT:
+                    case DRINK:
+                        this.func_178104_a(abstractclientplayer, partialTicks);
+                        this.transformFirstPersonItem(f, f1);
+                        break;
+                    case BLOCK:
+                        this.transformFirstPersonItem(f + 0.1F, f1);
+                        this.func_178103_d();
+                        GlStateManager.translate(-0.5F, 0.2F, 0.0F);
+                        break;
+                    case BOW:
+                        this.transformFirstPersonItem(f, f1);
+                        this.func_178098_a(partialTicks, abstractclientplayer);
+                }
+            }else{
+                if (!LiquidBounce.moduleManager.getModule(SwingAnimation.class).getState())
+                    this.func_178105_d(f1);
+                this.transformFirstPersonItem(f, f1);
+            }
+
+            this.renderItem(abstractclientplayer, this.itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON);
+        }else if(!abstractclientplayer.isInvisible()) {
+            this.func_178095_a(abstractclientplayer, f, f1);
+        }
+
+        GlStateManager.popMatrix();
+        GlStateManager.disableRescaleNormal();
+        RenderHelper.disableStandardItemLighting();
+    }
+    /*
     public void renderItemInFirstPerson(float partialTicks)
     {
         if (!Config.isShaders() || !Shaders.isSkipRenderHand())
@@ -392,7 +447,7 @@ public class ItemRenderer
             GlStateManager.disableRescaleNormal();
             RenderHelper.disableStandardItemLighting();
         }
-    }
+    }*/
 
     /**
      * Renders all the overlays that are in first person mode. Args: partialTickTime
@@ -517,6 +572,23 @@ public class ItemRenderer
      */
     private void renderFireInFirstPerson(float p_78442_1_)
     {
+        {
+            final AntiBlind antiBlind = (AntiBlind) LiquidBounce.moduleManager.getModule(AntiBlind.class);
+
+            if(antiBlind.getState() && antiBlind.getFireEffect().get()) {
+                //vanilla's method
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 0.9F);
+                GlStateManager.depthFunc(519);
+                GlStateManager.depthMask(false);
+                GlStateManager.enableBlend();
+                GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.disableBlend();
+                GlStateManager.depthMask(true);
+                GlStateManager.depthFunc(515);
+                return;
+            }
+        }
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 0.9F);

@@ -21,16 +21,10 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityEnderChest;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-
-@Mixin(TileEntityItemStackRenderer.class)
-@SideOnly(Side.CLIENT)
+//@Mixin(TileEntityItemStackRenderer.class)
+@Deprecated
 public class MixinTileEntityItemStackRenderer {
-
+    /*
     @Shadow
     private TileEntityBanner banner;
 
@@ -46,6 +40,7 @@ public class MixinTileEntityItemStackRenderer {
     /**
      * @author CCBlueX
      */
+    /*
     @Overwrite
     public void renderByItem(ItemStack itemStackIn) {
         if(itemStackIn.getItem() == Items.banner) {
@@ -93,4 +88,6 @@ public class MixinTileEntityItemStackRenderer {
             }
         }
     }
+
+     */
 }

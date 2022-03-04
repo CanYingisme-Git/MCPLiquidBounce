@@ -10,16 +10,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.handshake.client.C00Handshake;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 
-@SideOnly(Side.CLIENT)
-@Mixin(C00Handshake.class)
+//@Mixin(C00Handshake.class)
+@Deprecated
 public class MixinC00Handshake {
-
+    /*
     @Shadow
     private int protocolVersion;
 
@@ -35,6 +30,7 @@ public class MixinC00Handshake {
     /**
      * @author CCBlueX
      */
+    /*
     @Overwrite
     public void writePacketData(PacketBuffer buf) {
         buf.writeVarIntToBuffer(this.protocolVersion);
@@ -42,4 +38,6 @@ public class MixinC00Handshake {
         buf.writeShort(this.port);
         buf.writeVarIntToBuffer(this.requestedState.getId());
     }
+
+     */
 }

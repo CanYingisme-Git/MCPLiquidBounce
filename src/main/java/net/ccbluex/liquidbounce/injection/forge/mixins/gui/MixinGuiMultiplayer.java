@@ -13,14 +13,11 @@ import net.ccbluex.liquidbounce.ui.client.tools.GuiTools;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiButton;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(GuiMultiplayer.class)
+//@Mixin(GuiMultiplayer.class)
+@Deprecated
 public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
-
+    /*
     private GuiButton bungeeCordSpoofButton;
 
     @Inject(method = "initGui", at = @At("RETURN"))
@@ -46,4 +43,6 @@ public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
                 break;
         }
     }
+
+     */
 }

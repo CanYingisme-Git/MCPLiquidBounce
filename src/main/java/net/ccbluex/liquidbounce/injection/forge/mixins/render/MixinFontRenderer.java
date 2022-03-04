@@ -9,21 +9,12 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.TextEvent;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL20;
-import org.spongepowered.asm.mixin.Debug;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(FontRenderer.class)
-@Debug(export = true, print = true)
-@SideOnly(Side.CLIENT)
+//@Mixin(FontRenderer.class)
+@Deprecated
 public class MixinFontRenderer {
+    /*
     // Local Variable
     private boolean rainbowEnabled0 = false;
     // Local Variable
@@ -99,5 +90,5 @@ public class MixinFontRenderer {
         final TextEvent textEvent = new TextEvent(string);
         LiquidBounce.eventManager.callEvent(textEvent);
         return textEvent.getText();
-    }
+    }*/
 }

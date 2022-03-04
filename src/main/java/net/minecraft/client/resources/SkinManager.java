@@ -11,11 +11,16 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.misc.NameProtect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IImageBuffer;
 import net.minecraft.client.renderer.ImageBufferDownload;
@@ -149,6 +154,18 @@ public class SkinManager
 
     public Map<Type, MinecraftProfileTexture> loadSkinFromCache(GameProfile profile)
     {
+        {
+            if (profile != null){
+                NameProtect nameProtect = (NameProtect) LiquidBounce.moduleManager.getModule(NameProtect.class);
+
+                if (nameProtect.getState() && nameProtect.skinProtectValue.get()) {
+                    if (nameProtect.allPlayersValue.get() || Objects.equals(profile.getId(), Minecraft.getMinecraft().getSession().getProfile().getId())) {
+                        return (new HashMap<>());
+                    }
+                }
+            }
+
+        }
         return (Map)this.skinCacheLoader.getUnchecked(profile);
     }
 

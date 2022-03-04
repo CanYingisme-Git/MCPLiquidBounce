@@ -5,41 +5,12 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import com.mojang.authlib.Agent;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
-import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
-import com.thealtening.AltService;
-import com.thealtening.api.TheAltening;
-import com.thealtening.api.data.AccountData;
-import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.SessionEvent;
-import net.ccbluex.liquidbounce.features.special.AntiForge;
-import net.ccbluex.liquidbounce.features.special.AutoReconnect;
-import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
-import net.ccbluex.liquidbounce.ui.client.altmanager.sub.altgenerator.GuiTheAltening;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.ServerUtils;
-import net.ccbluex.liquidbounce.utils.login.LoginUtils;
-import net.ccbluex.liquidbounce.utils.login.MinecraftAccount;
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiDisconnected;
-import net.minecraft.client.gui.GuiSlider;
-import net.minecraft.util.Session;
-import net.minecraftforge.fml.client.config.GuiSlider;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.net.Proxy;
-import java.text.DecimalFormat;
-import java.util.List;
-import java.util.Random;
 
-@Mixin(GuiDisconnected.class)
+//@Mixin(GuiDisconnected.class)
+@Deprecated
 public abstract class MixinGuiDisconnected extends MixinGuiScreen {
+    /*
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#0");
 
     @Shadow
@@ -156,5 +127,5 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
     private void updateReconnectButton() {
         if (reconnectButton != null)
             reconnectButton.displayString = "Reconnect" + (AutoReconnect.INSTANCE.isEnabled() ? " (" + (AutoReconnect.INSTANCE.getDelay() / 1000 - reconnectTimer / 20) + ")" : "");
-    }
+    }*/
 }

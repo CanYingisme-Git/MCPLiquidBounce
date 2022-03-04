@@ -90,7 +90,7 @@ public class ServerSelectionList extends GuiListExtended
 
     protected int getScrollBarX()
     {
-        return super.getScrollBarX() + 30;
+        return this.width - 5;
     }
 
     /**

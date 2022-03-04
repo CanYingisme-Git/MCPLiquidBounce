@@ -1,5 +1,8 @@
 package net.minecraft.client.renderer.entity;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.RenderEntityEvent;
+import net.ccbluex.liquidbounce.injection.backend.EntityImplKt;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -65,6 +68,7 @@ public abstract class Render<T extends Entity> implements IEntityRenderer
      */
     public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
+        LiquidBounce.eventManager.callEvent(new RenderEntityEvent(EntityImplKt.wrap(entity), x, y, z, entityYaw, partialTicks));
         this.renderName(entity, x, y, z);
     }
 

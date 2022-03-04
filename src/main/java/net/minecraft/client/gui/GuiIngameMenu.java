@@ -1,6 +1,8 @@
 package net.minecraft.client.gui;
 
 import java.io.IOException;
+
+import net.ccbluex.liquidbounce.utils.ServerUtils;
 import net.minecraft.client.gui.achievement.GuiAchievements;
 import net.minecraft.client.gui.achievement.GuiStats;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -36,6 +38,8 @@ public class GuiIngameMenu extends GuiScreen
         this.buttonList.add(new GuiButton(5, this.width / 2 - 100, this.height / 4 + 48 + i, 98, 20, I18n.format("gui.achievements", new Object[0])));
         this.buttonList.add(new GuiButton(6, this.width / 2 + 2, this.height / 4 + 48 + i, 98, 20, I18n.format("gui.stats", new Object[0])));
         guibutton.enabled = this.mc.isSingleplayer() && !this.mc.getIntegratedServer().getPublic();
+        if(!this.mc.isIntegratedServerRunning())
+            this.buttonList.add(new GuiButton(1337, this.width / 2 - 100, this.height / 4 + 128, "Reconnect"));
     }
 
     /**
@@ -43,6 +47,10 @@ public class GuiIngameMenu extends GuiScreen
      */
     protected void actionPerformed(GuiButton button) throws IOException
     {
+        if (button.id == 1337) {
+            mc.theWorld.sendQuittingDisconnectingPacket();
+            ServerUtils.connectToLastServer();
+        }
         switch (button.id)
         {
             case 0:

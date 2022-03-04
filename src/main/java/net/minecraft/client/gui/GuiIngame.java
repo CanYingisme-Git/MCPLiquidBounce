@@ -6,6 +6,14 @@ import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.Render2DEvent;
+import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
+import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.render.NoScoreboard;
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
+import net.ccbluex.liquidbounce.utils.ClassUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -43,6 +51,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraft.world.border.WorldBorder;
 import net.optifine.CustomColors;
+import org.lwjgl.opengl.GL11;
 
 public class GuiIngame extends Gui
 {
@@ -352,6 +361,38 @@ public class GuiIngame extends Gui
 
     protected void renderTooltip(ScaledResolution sr, float partialTicks)
     {
+        {
+            final HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+
+            if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer && hud.getState() && hud.getBlackHotbarValue().get()) {
+                EntityPlayer entityPlayer = (EntityPlayer) Minecraft.getMinecraft().getRenderViewEntity();
+
+                int middleScreen = sr.getScaledWidth() / 2;
+
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                GuiIngame.drawRect(middleScreen - 91, sr.getScaledHeight() - 24, middleScreen + 90, sr.getScaledHeight(), Integer.MIN_VALUE);
+                GuiIngame.drawRect(middleScreen - 91 - 1 + entityPlayer.inventory.currentItem * 20 + 1, sr.getScaledHeight() - 24, middleScreen - 91 - 1 + entityPlayer.inventory.currentItem * 20 + 22, sr.getScaledHeight() - 22 - 1 + 24, Integer.MAX_VALUE);
+
+                GlStateManager.enableRescaleNormal();
+                GL11.glEnable(GL11.GL_BLEND);
+                GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+                RenderHelper.enableGUIStandardItemLighting();
+
+                for(int j = 0; j < 9; ++j) {
+                    int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
+                    int l = sr.getScaledHeight() - 16 - 3;
+                    this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
+                }
+
+                RenderHelper.disableStandardItemLighting();
+                GlStateManager.disableRescaleNormal();
+                GlStateManager.disableBlend();
+
+                LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks));
+                AWTFontRenderer.Companion.garbageCollectionTick();
+                return;
+            }
+        }
         if (this.mc.getRenderViewEntity() instanceof EntityPlayer)
         {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -378,6 +419,10 @@ public class GuiIngame extends Gui
             RenderHelper.disableStandardItemLighting();
             GlStateManager.disableRescaleNormal();
             GlStateManager.disableBlend();
+        }
+        if (!ClassUtils.hasClass("net.labymod.api.LabyModAPI")) {
+            LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks));
+            AWTFontRenderer.Companion.garbageCollectionTick();
         }
     }
 
@@ -544,6 +589,8 @@ public class GuiIngame extends Gui
 
     private void renderScoreboard(ScoreObjective p_180475_1_, ScaledResolution p_180475_2_)
     {
+        if (LiquidBounce.moduleManager.getModule(HUD.class).getState() || NoScoreboard.INSTANCE.getState())
+            return;
         Scoreboard scoreboard = p_180475_1_.getScoreboard();
         Collection<Score> collection = scoreboard.getSortedScores(p_180475_1_);
         List<Score> list = Lists.newArrayList(Iterables.filter(collection, new Predicate<Score>()
@@ -921,6 +968,12 @@ public class GuiIngame extends Gui
 
     private void renderPumpkinOverlay(ScaledResolution p_180476_1_)
     {
+        {
+            final AntiBlind antiBlind = (AntiBlind) LiquidBounce.moduleManager.getModule(AntiBlind.class);
+
+            if(antiBlind.getState() && antiBlind.getPumpkinEffect().get())
+                return;
+        }
         GlStateManager.disableDepth();
         GlStateManager.depthMask(false);
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);

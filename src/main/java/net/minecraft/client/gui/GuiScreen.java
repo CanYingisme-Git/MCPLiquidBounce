@@ -13,8 +13,17 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.misc.ComponentOnHover;
+import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
+import net.ccbluex.liquidbounce.injection.backend.ResourceLocationImplKt;
+import net.ccbluex.liquidbounce.ui.client.GuiBackground;
+import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
+import net.ccbluex.liquidbounce.utils.render.shader.shaders.BackgroundShader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.stream.GuiTwitchUserMode;
 import net.minecraft.client.renderer.GlStateManager;
@@ -35,6 +44,7 @@ import net.minecraft.stats.Achievement;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import org.apache.commons.lang3.StringUtils;
@@ -268,6 +278,16 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
      */
     protected void handleComponentHover(IChatComponent p_175272_1_, int p_175272_2_, int p_175272_3_)
     {
+        if (p_175272_1_ == null || p_175272_1_.getChatStyle().getChatClickEvent() == null || !LiquidBounce.moduleManager.getModule(ComponentOnHover.class).getState())
+            return;
+
+        final ChatStyle chatStyle = p_175272_1_.getChatStyle();
+
+        final ClickEvent clickEvent = chatStyle.getChatClickEvent();
+        final HoverEvent hoverEvent = chatStyle.getChatHoverEvent();
+
+        drawHoveringText(Collections.singletonList("§c§l" + clickEvent.getAction().getCanonicalName().toUpperCase() + ": §a" + clickEvent.getValue()), p_175272_2_, p_175272_3_ - (hoverEvent != null ? 17 : 0));
+
         if (p_175272_1_ != null && p_175272_1_.getChatStyle().getChatHoverEvent() != null)
         {
             HoverEvent hoverevent = p_175272_1_.getChatStyle().getChatHoverEvent();
@@ -480,6 +500,12 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 
     public void sendChatMessage(String msg, boolean addToChat)
     {
+        if (msg.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix())) && addToChat) {
+            this.mc.ingameGUI.getChatGUI().addToSentMessages(msg);
+
+            LiquidBounce.commandManager.executeCommands(msg);
+            return;
+        }
         if (addToChat)
         {
             this.mc.ingameGUI.getChatGUI().addToSentMessages(msg);
@@ -661,6 +687,14 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 
     public void drawWorldBackground(int tint)
     {
+        final HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+
+        if(hud.getInventoryParticle().get() && mc.thePlayer != null) {
+            final ScaledResolution scaledResolution = new ScaledResolution(mc);
+            final int width = scaledResolution.getScaledWidth();
+            final int height = scaledResolution.getScaledHeight();
+            ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
+        }
         if (this.mc.theWorld != null)
         {
             this.drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
@@ -676,6 +710,39 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
      */
     public void drawBackground(int tint)
     {
+        {
+            GlStateManager.disableLighting();
+            GlStateManager.disableFog();
+
+            if(GuiBackground.Companion.getEnabled()) {
+                if (LiquidBounce.INSTANCE.getBackground() == null) {
+                    BackgroundShader.BACKGROUND_SHADER.startShader();
+
+                    final Tessellator instance = Tessellator.getInstance();
+                    final WorldRenderer worldRenderer = instance.getWorldRenderer();
+                    worldRenderer.begin(7, DefaultVertexFormats.POSITION);
+                    worldRenderer.pos(0, height, 0.0D).endVertex();
+                    worldRenderer.pos(width, height, 0.0D).endVertex();
+                    worldRenderer.pos(width, 0, 0.0D).endVertex();
+                    worldRenderer.pos(0, 0, 0.0D).endVertex();
+                    instance.draw();
+
+                    BackgroundShader.BACKGROUND_SHADER.stopShader();
+                }else{
+                    final ScaledResolution scaledResolution = new ScaledResolution(mc);
+                    final int width = scaledResolution.getScaledWidth();
+                    final int height = scaledResolution.getScaledHeight();
+
+                    mc.getTextureManager().bindTexture(ResourceLocationImplKt.unwrap(LiquidBounce.INSTANCE.getBackground()));
+                    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                    Gui.drawScaledCustomSizeModalRect(0, 0, 0.0F, 0.0F, width, height, width, height, width, height);
+                }
+
+                if (GuiBackground.Companion.getParticles())
+                    ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
+                return;
+            }
+        }
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
@@ -689,6 +756,8 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         worldrenderer.func_181662_b((double)this.width, 0.0D, 0.0D).func_181673_a((double)((float)this.width / 32.0F), (double)tint).func_181669_b(64, 64, 64, 255).func_181675_d();
         worldrenderer.func_181662_b(0.0D, 0.0D, 0.0D).func_181673_a(0.0D, (double)tint).func_181669_b(64, 64, 64, 255).func_181675_d();
         tessellator.draw();
+        if(GuiBackground.Companion.getParticles())
+            ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
     }
 
     /**

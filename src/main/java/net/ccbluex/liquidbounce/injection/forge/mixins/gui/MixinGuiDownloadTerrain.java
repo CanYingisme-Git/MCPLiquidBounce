@@ -12,14 +12,10 @@ import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.realms.RealmsBridge;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(GuiDownloadTerrain.class)
+//@Mixin(GuiDownloadTerrain.class)
 public abstract class MixinGuiDownloadTerrain extends MixinGuiScreen {
-
+    /*
     @Inject(method = "initGui", at = @At(value = "RETURN"))
     private void injectDisconnectButton(CallbackInfo ci) {
         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120 + 12, I18n.format("gui.cancel")));
@@ -44,5 +40,5 @@ public abstract class MixinGuiDownloadTerrain extends MixinGuiScreen {
             }
         }
 
-    }
+    }*/
 }

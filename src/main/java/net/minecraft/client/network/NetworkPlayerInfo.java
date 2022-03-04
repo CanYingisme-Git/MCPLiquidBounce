@@ -4,6 +4,8 @@ import com.google.common.base.Objects;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.misc.NameProtect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.SkinManager;
@@ -91,6 +93,15 @@ public class NetworkPlayerInfo
 
     public ResourceLocation getLocationSkin()
     {
+        {
+            NameProtect nameProtect = (NameProtect) LiquidBounce.moduleManager.getModule(NameProtect.class);
+
+            if (nameProtect.getState() && nameProtect.skinProtectValue.get()) {
+                if (nameProtect.allPlayersValue.get() || java.util.Objects.equals(gameProfile.getId(), Minecraft.getMinecraft().getSession().getProfile().getId())) {
+                    return (DefaultPlayerSkin.getDefaultSkin(this.gameProfile.getId()));
+                }
+            }
+        }
         if (this.locationSkin == null)
         {
             this.loadPlayerTextures();

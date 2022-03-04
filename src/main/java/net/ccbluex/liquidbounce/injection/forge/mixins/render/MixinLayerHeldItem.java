@@ -18,19 +18,13 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.UUID;
 
-@Mixin(LayerHeldItem.class)
-@SideOnly(Side.CLIENT)
+//@Mixin(LayerHeldItem.class)
+@Deprecated
 public class MixinLayerHeldItem {
-
+    /*
     @Shadow
     @Final
     private RendererLivingEntity<?> livingEntityRenderer;
@@ -38,6 +32,7 @@ public class MixinLayerHeldItem {
     /**
      * @author CCBlueX
      */
+    /*
     @Overwrite
     public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float p_177141_2_, float p_177141_3_, float partialTicks, float p_177141_5_, float p_177141_6_, float p_177141_7_, float scale) {
         ItemStack itemstack = entitylivingbaseIn.getHeldItem();
@@ -94,4 +89,6 @@ public class MixinLayerHeldItem {
             GlStateManager.popMatrix();
         }
     }
+
+     */
 }

@@ -1,7 +1,12 @@
 package net.minecraft.client.model;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.render.Rotations;
+import net.ccbluex.liquidbounce.utils.RotationUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 
 public class ModelBiped extends ModelBase
@@ -174,7 +179,13 @@ public class ModelBiped extends ModelBase
         }
 
         this.bipedLeftArm.rotateAngleY = 0.0F;
+        if(heldItemRight == 3)
+            this.bipedRightArm.rotateAngleY = 0F;
 
+        if (LiquidBounce.moduleManager.getModule(Rotations.class).getState() && RotationUtils.serverRotation != null && entityIn instanceof EntityPlayer
+                && entityIn.equals(Minecraft.getMinecraft().thePlayer)) {
+            this.bipedHead.rotateAngleX = RotationUtils.serverRotation.getPitch() / (180F / (float) Math.PI);
+        }
         if (this.swingProgress > -9990.0F)
         {
             float f = this.swingProgress;

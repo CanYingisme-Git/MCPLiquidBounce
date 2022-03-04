@@ -3,6 +3,7 @@ package net.minecraft.client.renderer.tileentity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityPainting;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 
@@ -21,6 +22,12 @@ public class TileEntityMobSpawnerRenderer extends TileEntitySpecialRenderer<Tile
      */
     public static void renderMob(MobSpawnerBaseLogic mobSpawnerLogic, double posX, double posY, double posZ, float partialTicks)
     {
+        {
+            Entity entity = mobSpawnerLogic.func_180612_a(mobSpawnerLogic.getSpawnerWorld());
+
+            if (entity == null || entity instanceof EntityPainting)
+                return;
+        }
         Entity entity = mobSpawnerLogic.func_180612_a(mobSpawnerLogic.getSpawnerWorld());
 
         if (entity != null)

@@ -32,6 +32,10 @@ import java.net.SocketAddress;
 import java.util.Queue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.crypto.SecretKey;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.PacketEvent;
+import net.ccbluex.liquidbounce.injection.backend.PacketImplKt;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.CryptManager;
@@ -148,6 +152,13 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 
     protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, Packet p_channelRead0_2_) throws Exception
     {
+        {
+            final PacketEvent event = new PacketEvent(PacketImplKt.wrap(p_channelRead0_2_));
+            LiquidBounce.eventManager.callEvent(event);
+
+            if(event.isCancelled())
+                return;
+        }
         if (this.channel.isOpen())
         {
             try
@@ -174,6 +185,13 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 
     public void sendPacket(Packet packetIn)
     {
+        {
+            final PacketEvent event = new PacketEvent(PacketImplKt.wrap(packetIn));
+            LiquidBounce.eventManager.callEvent(event);
+
+            if(event.isCancelled())
+                return;
+        }
         if (this.isChannelOpen())
         {
             this.flushOutboundQueue();

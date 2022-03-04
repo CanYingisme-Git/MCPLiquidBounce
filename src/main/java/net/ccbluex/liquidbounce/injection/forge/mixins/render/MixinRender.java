@@ -10,14 +10,12 @@ import net.ccbluex.liquidbounce.event.RenderEntityEvent;
 import net.ccbluex.liquidbounce.injection.backend.EntityImplKt;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Render.class)
+
+//@Mixin(Render.class)
+@Deprecated
 public abstract class MixinRender {
+    /*
     @Shadow
     protected abstract <T extends Entity> boolean bindEntityTexture(T entity);
 
@@ -25,4 +23,6 @@ public abstract class MixinRender {
     private void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
         LiquidBounce.eventManager.callEvent(new RenderEntityEvent(EntityImplKt.wrap(entity), x, y, z, entityYaw, partialTicks));
     }
+
+     */
 }

@@ -1,5 +1,8 @@
 package net.minecraft.client.gui;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.Render2DEvent;
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.spectator.ISpectatorMenuObject;
 import net.minecraft.client.gui.spectator.ISpectatorMenuRecipient;
@@ -46,6 +49,7 @@ public class GuiSpectator extends Gui implements ISpectatorMenuRecipient
 
     public void renderTooltip(ScaledResolution p_175264_1_, float p_175264_2_)
     {
+
         if (this.field_175271_i != null)
         {
             float f = this.func_175265_c();
@@ -65,6 +69,8 @@ public class GuiSpectator extends Gui implements ISpectatorMenuRecipient
                 this.zLevel = f1;
             }
         }
+        LiquidBounce.eventManager.callEvent(new Render2DEvent(p_175264_2_));
+        AWTFontRenderer.Companion.garbageCollectionTick();
     }
 
     protected void func_175258_a(ScaledResolution p_175258_1_, float p_175258_2_, int p_175258_3_, float p_175258_4_, SpectatorDetails p_175258_5_)

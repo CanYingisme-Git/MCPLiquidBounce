@@ -4,6 +4,12 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.special.BungeeCordSpoof;
+import net.ccbluex.liquidbounce.injection.backend.GuiScreenImplKt;
+import net.ccbluex.liquidbounce.ui.client.GuiAntiForge;
+import net.ccbluex.liquidbounce.ui.client.tools.GuiTools;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
@@ -28,6 +34,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
     private boolean addingServer;
     private boolean editingServer;
     private boolean directConnect;
+    private GuiButton bungeeCordSpoofButton;
 
     /**
      * The text to be displayed when the player's cursor hovers over a server listing.
@@ -78,6 +85,9 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
         }
 
         this.createButtons();
+        buttonList.add(new GuiButton(997, 5, 8, 98, 20, "AntiForge"));
+        buttonList.add(bungeeCordSpoofButton = new GuiButton(998, 108, 8, 98, 20, "BungeeCord Spoof: " + (BungeeCordSpoof.enabled ? "On" : "Off")));
+        buttonList.add(new GuiButton(999, width - 104, 8, 98, 20, "Tools"));
     }
 
     /**
@@ -139,6 +149,19 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
      */
     protected void actionPerformed(GuiButton button) throws IOException
     {
+        switch (button.id) {
+            case 997:
+                mc.displayGuiScreen(GuiScreenImplKt.unwrap(LiquidBounce.wrapper.getClassProvider().wrapGuiScreen(new GuiAntiForge(GuiScreenImplKt.wrap((GuiScreen) (Object) this)))));
+                break;
+            case 998:
+                BungeeCordSpoof.enabled = !BungeeCordSpoof.enabled;
+                bungeeCordSpoofButton.displayString = "BungeeCord Spoof: " + (BungeeCordSpoof.enabled ? "On" : "Off");
+                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.valuesConfig);
+                break;
+            case 999:
+                mc.displayGuiScreen(GuiScreenImplKt.unwrap(LiquidBounce.wrapper.getClassProvider().wrapGuiScreen(new GuiTools(GuiScreenImplKt.wrap((GuiScreen) (Object) this)))));
+                break;
+        }
         if (button.enabled)
         {
             GuiListExtended.IGuiListEntry guilistextended$iguilistentry = this.serverListSelector.func_148193_k() < 0 ? null : this.serverListSelector.getListEntry(this.serverListSelector.func_148193_k());

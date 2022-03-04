@@ -7,17 +7,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.util.ResourceLocation;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import java.util.Objects;
 
-@Mixin(NetworkPlayerInfo.class)
+//@Mixin(NetworkPlayerInfo.class)
+@Deprecated
 public class MixinNetworkPlayerInfo {
+    /*
     @Shadow
     @Final
     private GameProfile gameProfile;
@@ -34,4 +29,6 @@ public class MixinNetworkPlayerInfo {
         }
 
     }
+
+     */
 }

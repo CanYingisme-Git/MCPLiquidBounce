@@ -60,9 +60,8 @@ public class GuiKeyBindingList extends GuiListExtended
         return this.listEntries[index];
     }
 
-    protected int getScrollBarX()
-    {
-        return super.getScrollBarX() + 15;
+    protected int getScrollBarX() {
+        return this.width - 5;
     }
 
     /**

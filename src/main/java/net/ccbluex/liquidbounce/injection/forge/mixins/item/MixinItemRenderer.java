@@ -20,20 +20,11 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ItemRenderer.class)
-@SideOnly(Side.CLIENT)
+//@Mixin(ItemRenderer.class)
+@Deprecated
 public abstract class MixinItemRenderer {
-
+    /*
     @Shadow
     private float prevEquippedProgress;
 
@@ -83,6 +74,7 @@ public abstract class MixinItemRenderer {
     /**
      * @author CCBlueX
      */
+    /*
     @Overwrite
     public void renderItemInFirstPerson(float partialTicks) {
         float f = 1.0F - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
@@ -156,4 +148,6 @@ public abstract class MixinItemRenderer {
             callbackInfo.cancel();
         }
     }
+
+     */
 }

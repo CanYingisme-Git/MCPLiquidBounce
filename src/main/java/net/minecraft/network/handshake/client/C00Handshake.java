@@ -1,6 +1,9 @@
 package net.minecraft.network.handshake.client;
 
 import java.io.IOException;
+
+import net.ccbluex.liquidbounce.features.special.AntiForge;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -42,7 +45,7 @@ public class C00Handshake implements Packet<INetHandlerHandshakeServer>
     public void writePacketData(PacketBuffer buf) throws IOException
     {
         buf.writeVarIntToBuffer(this.protocolVersion);
-        buf.writeString(this.ip);
+        buf.writeString(this.ip + (AntiForge.enabled && AntiForge.blockFML && !Minecraft.getMinecraft().isIntegratedServerRunning() ? "" : "\0FML\0"));
         buf.writeShort(this.port);
         buf.writeVarIntToBuffer(this.requestedState.getId());
     }

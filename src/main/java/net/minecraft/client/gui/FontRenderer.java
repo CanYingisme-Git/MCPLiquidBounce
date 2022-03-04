@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Random;
+
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.TextEvent;
+import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -28,11 +32,15 @@ import net.optifine.render.GlBlendState;
 import net.optifine.util.FontUtils;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
 public class FontRenderer implements IResourceManagerReloadListener
 {
     private static final ResourceLocation[] unicodePageLocations = new ResourceLocation[256];
-
+    // Local Variable
+    private boolean rainbowEnabled0 = false;
+    // Local Variable
+    private boolean rainbowEnabled1 = false;
     /** Array of width of all the characters in default.png */
     private final int[] charWidth = new int[256];
 
@@ -403,11 +411,19 @@ public class FontRenderer implements IResourceManagerReloadListener
 
         if (dropShadow)
         {
+            rainbowEnabled0 = RainbowFontShader.INSTANCE.isInUse();
+
+            if (rainbowEnabled0) {
+                GL20.glUseProgram(0);
+            }
             i = this.renderString(text, x + 1.0F, y + 1.0F, color, true);
             i = Math.max(i, this.renderString(text, x, y, color, false));
         }
         else
         {
+            if (rainbowEnabled0) {
+                GL20.glUseProgram(RainbowFontShader.INSTANCE.getProgramId());
+            }
             i = this.renderString(text, x, y, color, false);
         }
 
@@ -453,6 +469,7 @@ public class FontRenderer implements IResourceManagerReloadListener
      */
     private void renderStringAtPos(String p_78255_1_, boolean p_78255_2_)
     {
+        rainbowEnabled1 = RainbowFontShader.INSTANCE.isInUse();
         for (int i = 0; i < p_78255_1_.length(); ++i)
         {
             char c0 = p_78255_1_.charAt(i);
@@ -487,6 +504,9 @@ public class FontRenderer implements IResourceManagerReloadListener
                     }
 
                     this.textColor = i1;
+                    if (rainbowEnabled1) {
+                        GL20.glUseProgram(0);
+                    }
                     this.setColor((float)(i1 >> 16) / 255.0F, (float)(i1 >> 8 & 255) / 255.0F, (float)(i1 & 255) / 255.0F, this.alpha);
                 }
                 else if (l == 16)
@@ -516,6 +536,9 @@ public class FontRenderer implements IResourceManagerReloadListener
                     this.strikethroughStyle = false;
                     this.underlineStyle = false;
                     this.italicStyle = false;
+                    if (rainbowEnabled1) {
+                        GL20.glUseProgram(RainbowFontShader.INSTANCE.getProgramId());
+                    }
                     this.setColor(this.red, this.blue, this.green, this.alpha);
                 }
 
@@ -586,6 +609,9 @@ public class FontRenderer implements IResourceManagerReloadListener
                 this.doDraw(f);
             }
         }
+        if (rainbowEnabled1) {
+            GL20.glUseProgram(RainbowFontShader.INSTANCE.getProgramId());
+        }
     }
 
     protected void doDraw(float p_doDraw_1_)
@@ -641,6 +667,13 @@ public class FontRenderer implements IResourceManagerReloadListener
      */
     private int renderString(String text, float x, float y, int color, boolean dropShadow)
     {
+        {
+            if (LiquidBounce.eventManager != null && text != null){
+                final TextEvent textEvent = new TextEvent(text);
+                LiquidBounce.eventManager.callEvent(textEvent);
+                text = textEvent.getText();
+            }
+        }
         if (text == null)
         {
             return 0;
@@ -679,6 +712,13 @@ public class FontRenderer implements IResourceManagerReloadListener
      */
     public int getStringWidth(String text)
     {
+        {
+            if (LiquidBounce.eventManager != null && text != null){
+                final TextEvent textEvent = new TextEvent(text);
+                LiquidBounce.eventManager.callEvent(textEvent);
+                text = textEvent.getText();
+            }
+        }
         if (text == null)
         {
             return 0;
