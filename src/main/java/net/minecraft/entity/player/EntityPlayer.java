@@ -89,7 +89,6 @@ public abstract class EntityPlayer extends EntityLivingBase
 
     /** The Container the player has open. */
     public Container openContainer;
-
     /** The food object of the player, the general hunger logic. */
     protected FoodStats foodStats = new FoodStats();
 
@@ -113,11 +112,11 @@ public abstract class EntityPlayer extends EntityLivingBase
     public double chasingPosZ;
 
     /** Boolean value indicating weather a player is sleeping or not */
-    protected boolean sleeping;
+    public boolean sleeping;
 
     /** the current location of the player */
     public BlockPos playerLocation;
-    private int sleepTimer;
+    public int sleepTimer;
     public float renderOffsetX;
     public float renderOffsetY;
     public float renderOffsetZ;
@@ -159,9 +158,9 @@ public abstract class EntityPlayer extends EntityLivingBase
     /**
      * This field starts off equal to getMaxItemUseDuration and is decremented on each tick
      */
-    private int itemInUseCount;
+    public int itemInUseCount;
     protected float speedOnGround = 0.1F;
-    protected float speedInAir = 0.02F;
+    public float speedInAir = 0.02F;
     private int lastXPSound;
 
     /** The player's unique game profile */

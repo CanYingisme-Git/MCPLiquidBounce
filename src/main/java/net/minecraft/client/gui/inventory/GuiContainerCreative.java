@@ -82,7 +82,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer
     /**
      * Called when the mouse is clicked over a slot or outside the gui.
      */
-    protected void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType)
+    public void handleMouseClick(Slot slotIn, int slotId, int clickedButton, int clickType)
     {
         this.field_147057_D = true;
         boolean flag = clickType == 1;

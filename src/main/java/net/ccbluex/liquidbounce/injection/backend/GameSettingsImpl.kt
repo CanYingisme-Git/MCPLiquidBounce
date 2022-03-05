@@ -14,12 +14,12 @@ import net.ccbluex.liquidbounce.injection.backend.utils.unwrap
 import net.ccbluex.liquidbounce.injection.backend.utils.wrap
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.entity.player.EnumPlayerModelParts
-
+@SuppressWarnings("Impl maybe wrong")
 class GameSettingsImpl(val wrapped: GameSettings) : IGameSettings {
     override var entityShadows: Boolean
-        get() = wrapped.entityShadows
+        get() = wrapped.ofCustomEntityModels
         set(value) {
-            wrapped.entityShadows = value
+            wrapped.ofCustomEntityModels = value
         }
     override var gammaSetting: Float
         get() = wrapped.gammaSetting

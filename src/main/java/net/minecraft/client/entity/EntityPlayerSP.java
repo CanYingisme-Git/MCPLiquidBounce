@@ -111,7 +111,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
     private boolean serverSneakState;
 
     /** the last sprinting state sent to the server */
-    private boolean serverSprintState;
+    public boolean serverSprintState;
 
     /**
      * Reset to 0 every time position is sent to the server, used to send periodic updates every 20 ticks even when the
@@ -136,8 +136,8 @@ public class EntityPlayerSP extends AbstractClientPlayer
     public float renderArmPitch;
     public float prevRenderArmYaw;
     public float prevRenderArmPitch;
-    private int horseJumpPowerCounter;
-    private float horseJumpPower;
+    public int horseJumpPowerCounter;
+    public float horseJumpPower;
 
     /** The amount of time an entity has been in a Portal */
     public float timeInPortal;

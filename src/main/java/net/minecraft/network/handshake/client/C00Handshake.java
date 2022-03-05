@@ -12,8 +12,8 @@ import net.minecraft.network.handshake.INetHandlerHandshakeServer;
 public class C00Handshake implements Packet<INetHandlerHandshakeServer>
 {
     private int protocolVersion;
-    private String ip;
-    private int port;
+    public String ip;
+    public int port;
     private EnumConnectionState requestedState;
 
     public C00Handshake()

@@ -19,6 +19,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityTNTPrimed
 import net.minecraft.entity.player.EntityPlayer
+import net.optifine.reflect.Reflector
 import java.util.*
 
 open class EntityImpl<T : Entity>(val wrapped: T) : IEntity {
@@ -164,7 +165,7 @@ open class EntityImpl<T : Entity>(val wrapped: T) : IEntity {
     override val uniqueID: UUID
         get() = wrapped.uniqueID
     override val name: String?
-        get() = wrapped.name
+        get() = wrapped.commandSenderName
     override val ticksExisted: Int
         get() = wrapped.ticksExisted
     override val entityAlive: Boolean
@@ -176,7 +177,7 @@ open class EntityImpl<T : Entity>(val wrapped: T) : IEntity {
 
     override fun canBeCollidedWith(): Boolean = wrapped.canBeCollidedWith()
 
-    override fun canRiderInteract(): Boolean = wrapped.canRiderInteract()
+    override fun canRiderInteract(): Boolean = Reflector.callBoolean(wrapped, Reflector.ForgeEntity_canRiderInteract)
 
     override fun moveEntity(x: Double, y: Double, z: Double) = wrapped.moveEntity(x, y, z)
 

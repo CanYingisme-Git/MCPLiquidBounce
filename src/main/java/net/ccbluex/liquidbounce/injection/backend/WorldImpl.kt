@@ -67,7 +67,7 @@ open class WorldImpl<T : World>(val wrapped: T) : IWorld {
 
     override fun checkBlockCollision(aabb: IAxisAlignedBB): Boolean = wrapped.checkBlockCollision(aabb.unwrap())
 
-    override fun getCollisionBoxes(bb: IAxisAlignedBB): Collection<IAxisAlignedBB> = WrappedCollection(wrapped.getCollisionBoxes(bb.unwrap()), IAxisAlignedBB::unwrap, AxisAlignedBB::wrap)
+    override fun getCollisionBoxes(bb: IAxisAlignedBB): Collection<IAxisAlignedBB> = WrappedCollection(wrapped.func_147461_a(bb.unwrap()), IAxisAlignedBB::unwrap, AxisAlignedBB::wrap)
     override fun getChunkFromChunkCoords(x: Int, z: Int): IChunk = wrapped.getChunkFromChunkCoords(x, z).wrap()
 
     override fun equals(other: Any?): Boolean {

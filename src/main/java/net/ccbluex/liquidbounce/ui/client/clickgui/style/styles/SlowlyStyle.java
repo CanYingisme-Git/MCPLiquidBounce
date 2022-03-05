@@ -20,15 +20,12 @@ import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.StringUtils;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
 public class SlowlyStyle extends Style {
 
     private boolean mouseDown;

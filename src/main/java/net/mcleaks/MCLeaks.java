@@ -3,8 +3,6 @@ package net.mcleaks;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
@@ -16,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@SideOnly(Side.CLIENT)
 public class MCLeaks {
 
     private static Session session;

@@ -326,7 +326,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
         }
     }
 
-    private void loadShader(ResourceLocation resourceLocationIn)
+    public void loadShader(ResourceLocation resourceLocationIn)
     {
         if (OpenGlHelper.isFramebufferEnabled())
         {
@@ -646,7 +646,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
     {
         {
             if (LiquidBounce.moduleManager.getModule(NoHurtCam.class).getState())
-                fogColorRed
+                return;
         }
         if (this.mc.getRenderViewEntity() instanceof EntityLivingBase)
         {
@@ -763,10 +763,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
                     if (movingobjectposition != null)
                     {
 
-                        //double d7 = movingobjectposition.hitVec.distanceTo(new Vec3(d0, d1, d2));
-                        {
-
-                        }
+                        double d7 = movingobjectposition.hitVec.distanceTo(new Vec3(d0, d1, d2));
                         if (d7 < d3)
                         {
                             d3 = d7;

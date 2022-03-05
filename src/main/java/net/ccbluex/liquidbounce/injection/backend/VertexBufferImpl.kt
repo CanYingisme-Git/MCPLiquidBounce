@@ -19,7 +19,7 @@ class VertexBufferImpl(val wrapped: VertexBuffer) : IVertexBuffer {
 
     override fun unbindBuffer() = wrapped.unbindBuffer()
 
-    override fun bufferData(buffer: ByteBuffer) = wrapped.bufferData(buffer)
+    override fun bufferData(buffer: ByteBuffer) = wrapped.func_181722_a(buffer)
 
     override fun equals(other: Any?): Boolean {
         return other is VertexBufferImpl && other.wrapped == this.wrapped

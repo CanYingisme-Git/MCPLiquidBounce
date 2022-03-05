@@ -12,9 +12,49 @@ public class C03PacketPlayer implements Packet<INetHandlerPlayServer>
     protected double z;
     protected float yaw;
     protected float pitch;
-    protected boolean onGround;
+    public boolean onGround;
     protected boolean moving;
     protected boolean rotating;
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
+    }
+
+    public void setOnGround(boolean onGround) {
+        this.onGround = onGround;
+    }
+
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
+
+    public void setRotating(boolean rotating) {
+        this.rotating = rotating;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
+
+    public void setZ(double z) {
+        this.z = z;
+    }
 
     public C03PacketPlayer()
     {

@@ -22,7 +22,7 @@ import net.ccbluex.liquidbounce.features.special.DonatorCape
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.injection.backend.Backend
 import net.ccbluex.liquidbounce.script.ScriptManager
-import net.ccbluex.liquidbounce.script.remapper.Remapper.loadSrg
+//import net.ccbluex.liquidbounce.script.remapper.Remapper.loadSrg
 import net.ccbluex.liquidbounce.tabs.BlocksTab
 import net.ccbluex.liquidbounce.tabs.ExploitsTab
 import net.ccbluex.liquidbounce.tabs.HeadsTab
@@ -109,7 +109,7 @@ object LiquidBounce {
 
         try {
             // Remapper
-            loadSrg()
+            //loadSrg()
 
             // ScriptManager
             scriptManager = ScriptManager()

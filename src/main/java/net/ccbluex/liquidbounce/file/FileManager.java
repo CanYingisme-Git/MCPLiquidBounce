@@ -12,8 +12,6 @@ import net.ccbluex.liquidbounce.file.configs.*;
 import net.ccbluex.liquidbounce.injection.backend.Backend;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -21,7 +19,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Field;
 
-@SideOnly(Side.CLIENT)
 public class FileManager extends MinecraftInstance {
 
     public final File dir = new File(mc.getDataDir(), LiquidBounce.CLIENT_NAME + "-" + Backend.MINECRAFT_VERSION_MAJOR + "." + Backend.MINECRAFT_VERSION_MINOR);

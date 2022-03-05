@@ -94,7 +94,7 @@ import net.minecraft.potion.PotionEffect
 import net.minecraft.stats.StatList
 import net.minecraft.tileentity.*
 import net.minecraft.util.*
-import net.minecraftforge.fml.client.GuiModList
+import al.nya.mcpbounce.fakeforge.GuiModList
 import java.awt.image.BufferedImage
 import java.io.File
 import java.security.PublicKey

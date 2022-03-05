@@ -56,7 +56,7 @@ object ExtractedFunctionsImpl : IExtractedFunctions {
 
     override fun getIdFromBlock(block: IBlock): Int = Block.getIdFromBlock(block.unwrap())
 
-    override fun getModifierForCreature(heldItem: IItemStack?, creatureAttribute: IEnumCreatureAttribute): Float = EnchantmentHelper.getModifierForCreature(heldItem?.unwrap(), creatureAttribute.unwrap())
+    override fun getModifierForCreature(heldItem: IItemStack?, creatureAttribute: IEnumCreatureAttribute): Float = EnchantmentHelper.func_152377_a(heldItem?.unwrap(), creatureAttribute.unwrap())
 
     override fun getObjectFromItemRegistry(res: IResourceLocation): IItem = Item.itemRegistry.getObject(res.unwrap()).wrap()
 

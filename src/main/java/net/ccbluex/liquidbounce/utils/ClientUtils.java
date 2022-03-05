@@ -9,15 +9,12 @@ import com.google.gson.JsonObject;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.api.minecraft.INetworkManager;
 import net.ccbluex.liquidbounce.api.minecraft.network.login.server.ISPacketEncryptionRequest;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.crypto.SecretKey;
 import java.security.PublicKey;
 
-@SideOnly(Side.CLIENT)
 public final class ClientUtils extends MinecraftInstance {
 
     private static final Logger logger = LogManager.getLogger("LiquidBounce");

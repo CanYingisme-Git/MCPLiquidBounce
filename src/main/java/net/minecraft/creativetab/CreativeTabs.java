@@ -101,7 +101,7 @@ public abstract class CreativeTabs
             return Item.getItemFromBlock(Blocks.chest);
         }
     }).setBackgroundImageName("inventory.png").setNoScrollbar().setNoTitle();
-    private final int tabIndex;
+    private int tabIndex;
     private final String tabLabel;
 
     /** Texture to use. */
@@ -118,6 +118,16 @@ public abstract class CreativeTabs
         this.tabIndex = index;
         this.tabLabel = label;
         creativeTabArray[index] = this;
+    }
+    public CreativeTabs(String label)
+    {
+        this.tabLabel = label;
+        for (CreativeTabs creativeTabs : creativeTabArray) {
+            if (creativeTabs.tabLabel.equals(label)){
+                this.tabIndex = creativeTabs.tabIndex;
+                creativeTabArray[tabIndex] = this;
+            }
+        }
     }
 
     public int getTabIndex()

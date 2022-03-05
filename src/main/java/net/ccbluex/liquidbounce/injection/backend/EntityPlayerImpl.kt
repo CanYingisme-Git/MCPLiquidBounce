@@ -74,7 +74,7 @@ open class EntityPlayerImpl<T : EntityPlayer>(wrapped: T) : EntityLivingBaseImpl
     override val itemInUseDuration: Int
         get() = wrapped.itemInUseDuration
     override val displayNameString: String
-        get() = wrapped.displayNameString
+        get() = wrapped.displayName.formattedText
     override val spectator: Boolean
         get() = wrapped.isSpectator
 

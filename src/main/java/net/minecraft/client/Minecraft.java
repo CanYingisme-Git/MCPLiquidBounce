@@ -235,7 +235,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     public int displayWidth;
     public int displayHeight;
     private boolean field_181541_X = false;
-    private Timer timer = new Timer(20.0F);
+    public Timer timer = new Timer(20.0F);
 
     /** Instance of PlayerUsageSnooper. */
     private PlayerUsageSnooper usageSnooper = new PlayerUsageSnooper("client", this, MinecraftServer.getCurrentTimeMillis());
@@ -248,7 +248,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     private Entity renderViewEntity;
     public Entity pointedEntity;
     public EffectRenderer effectRenderer;
-    private final Session session;
+    private Session session;
     private boolean isGamePaused;
 
     /** The font renderer used for displaying and measuring text */
@@ -302,7 +302,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     /**
      * When you place a block, it's set to 6, decremented once per tick, when it's 0, you can place another block.
      */
-    private int rightClickDelayTimer;
+    public int rightClickDelayTimer;
     private String serverName;
     private int serverPort;
 
@@ -408,7 +408,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         Bootstrap.register();
         LiquidBounce.wrapper = WrapperImpl.INSTANCE;
     }
-
     public void run()
     {
         if (displayWidth < 1067)
@@ -590,7 +589,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         if (this.serverName != null)
         {
-            this.displayGuiScreen(new GuiConnecting(new GuiMainMenu(), this, this.serverName, this.serverPort));
+            LiquidBounce.wrapper.getMinecraft().displayGuiScreen(LiquidBounce.wrapper.getClassProvider().wrapGuiScreen(new net.ccbluex.liquidbounce.ui.client.GuiMainMenu()));
+
         }
         else
         {
@@ -598,7 +598,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                 LiquidBounce.wrapper.getMinecraft().displayGuiScreen(LiquidBounce.wrapper.getClassProvider().wrapGuiScreen(new GuiWelcome()));
             else if (LiquidBounce.INSTANCE.getLatestVersion() > LiquidBounce.CLIENT_VERSION - (LiquidBounce.IN_DEV ? 1 : 0))
                 LiquidBounce.wrapper.getMinecraft().displayGuiScreen(LiquidBounce.wrapper.getClassProvider().wrapGuiScreen(new GuiUpdate()));
-            this.displayGuiScreen(new GuiMainMenu());
+            LiquidBounce.wrapper.getMinecraft().displayGuiScreen(LiquidBounce.wrapper.getClassProvider().wrapGuiScreen(new net.ccbluex.liquidbounce.ui.client.GuiMainMenu()));
         }
 
         this.renderEngine.deleteTexture(this.mojangLogo);
@@ -1031,7 +1031,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         if (guiScreenIn == null && this.theWorld == null)
         {
-            guiScreenIn = new GuiMainMenu();
+            guiScreenIn = GuiScreenImplKt.unwrap(LiquidBounce.wrapper.getClassProvider().wrapGuiScreen(new net.ccbluex.liquidbounce.ui.client.GuiMainMenu()));
         }
         else if (guiScreenIn == null && this.thePlayer.getHealth() <= 0.0F)
         {
@@ -1647,7 +1647,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     /**
      * Called when user clicked he's mouse right button (place)
      */
-    private void rightClickMouse()
+    public void rightClickMouse()
     {
         if (!this.playerController.func_181040_m())
         {
@@ -3124,7 +3124,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     {
         return this.session;
     }
-
+    public void setSession(Session session)
+    {
+        this.session = session;
+    }
     public PropertyMap getTwitchDetails()
     {
         return this.twitchDetails;

@@ -7,13 +7,7 @@ package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.api.minecraft.client.multiplayer.IServerData;
 import net.ccbluex.liquidbounce.ui.client.GuiMainMenu;
-import net.minecraft.client.gui.GuiMultiplayer;
-import net.minecraft.client.multiplayer.GuiConnecting;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
 public final class ServerUtils extends MinecraftInstance {
 
     public static IServerData serverData;

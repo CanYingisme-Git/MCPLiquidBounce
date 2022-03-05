@@ -1159,7 +1159,7 @@ public class Block
     public float getAmbientOcclusionLightValue()
     {
         if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(XRay.class)).getState()){
-            return 1F
+            return 1F;
         }
         return this.isBlockNormalCube() ? 0.2F : 1.0F;
     }

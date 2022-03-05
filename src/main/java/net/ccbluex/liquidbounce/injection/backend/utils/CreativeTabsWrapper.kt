@@ -13,5 +13,5 @@ class CreativeTabsWrapper(val wrapped: WrappedCreativeTabs, name: String) : Crea
     override fun getTabIconItem(): Item = wrapped.getTabIconItem().unwrap()
     override fun displayAllReleventItems(items: MutableList<ItemStack>?) = wrapped.displayAllReleventItems(WrappedMutableList(items!!, IItemStack::unwrap, ItemStack::wrap))
     override fun getTranslatedTabLabel(): String = wrapped.getTranslatedTabLabel()
-    override fun hasSearchBar(): Boolean = wrapped.hasSearchBar()
+    fun hasSearchBar(): Boolean = wrapped.hasSearchBar()
 }

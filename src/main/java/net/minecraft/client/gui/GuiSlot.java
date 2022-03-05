@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 public abstract class GuiSlot
 {
     protected final Minecraft mc;
-    protected int width;
+    public int width;
     protected int height;
 
     /** The top of the slot container. Affects the overlays and scrolling. */

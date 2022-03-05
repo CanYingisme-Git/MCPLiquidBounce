@@ -10,7 +10,6 @@ import com.mojang.authlib.exceptions.AuthenticationException
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import com.thealtening.AltService
-import com.thealtening.api.TheAltening
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiButton
 import net.ccbluex.liquidbounce.api.minecraft.client.gui.IGuiTextField
@@ -110,7 +109,7 @@ class GuiTheAltening(private val prevGui: GuiAltManager) : WrappedGuiScreen() {
                 generateButton.enabled = false
                 apiKey = apiKeyField.text
 
-                val altening = TheAltening(apiKey)
+                /*val altening = TheAltening(apiKey)
                 val asynchronous = TheAltening.Asynchronous(altening)
                 status = "§cGenerating account..."
 
@@ -162,6 +161,8 @@ class GuiTheAltening(private val prevGui: GuiAltManager) : WrappedGuiScreen() {
                     loginButton.enabled = true
                     generateButton.enabled = true
                 }
+
+                 */
             }
             2 -> {
                 loginButton.enabled = false

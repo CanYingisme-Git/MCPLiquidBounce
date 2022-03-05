@@ -1,6 +1,5 @@
 package net.minecraft.client.network;
 
-import al.nya.mixin.CallbackInfo;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -8,20 +7,12 @@ import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.Map.Entry;
-
-import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.EntityMovementEvent;
-import net.ccbluex.liquidbounce.features.special.AntiForge;
-import net.ccbluex.liquidbounce.injection.backend.EntityImplKt;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -285,25 +276,6 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
      */
     public void handleJoinGame(S01PacketJoinGame packetIn)
     {
-        if (true){
-            if(!AntiForge.enabled || !AntiForge.blockFML || Minecraft.getMinecraft().isIntegratedServerRunning())
-                return;
-
-            PacketThreadUtil.checkThreadAndEnqueue(packetIn, (NetHandlerPlayClient) (Object) this, gameController);
-            this.gameController.playerController = new PlayerControllerMP(gameController, (NetHandlerPlayClient) (Object) this);
-            this.clientWorldController = new WorldClient((NetHandlerPlayClient) (Object) this, new WorldSettings(0L, packetIn.getGameType(), false, packetIn.isHardcoreMode(), packetIn.getWorldType()), packetIn.getDimension(), packetIn.getDifficulty(), this.gameController.mcProfiler);
-            this.gameController.gameSettings.difficulty = packetIn.getDifficulty();
-            this.gameController.loadWorld(this.clientWorldController);
-            this.gameController.thePlayer.dimension = packetIn.getDimension();
-            this.gameController.displayGuiScreen(new GuiDownloadTerrain((NetHandlerPlayClient) (Object) this));
-            this.gameController.thePlayer.setEntityId(packetIn.getEntityId());
-            this.currentServerMaxPlayers = packetIn.getMaxPlayers();
-            this.gameController.thePlayer.setReducedDebug(packetIn.isReducedDebugInfo());
-            this.gameController.playerController.setGameType(packetIn.getGameType());
-            this.gameController.gameSettings.sendSettingsToServer();
-            this.netManager.sendPacket(new C17PacketCustomPayload("MC|Brand", (new PacketBuffer(Unpooled.buffer())).writeString(ClientBrandRetriever.getClientModName())));
-            return;
-        }
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.gameController);
         this.gameController.playerController = new PlayerControllerMP(this.gameController, this);
         this.clientWorldController = new WorldClient(this, new WorldSettings(0L, packetIn.getGameType(), false, packetIn.isHardcoreMode(), packetIn.getWorldType()), packetIn.getDimension(), packetIn.getDifficulty(), this.gameController.mcProfiler);
@@ -655,10 +627,6 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
             float f1 = packetIn.func_149060_h() ? (float)(packetIn.func_149063_g() * 360) / 256.0F : entity.rotationPitch;
             entity.setPositionAndRotation2(d0, d1, d2, f, f1, 3, false);
             entity.onGround = packetIn.getOnGround();
-            final Entity et = packetIn.getEntity(this.clientWorldController);
-
-            if(entity != null)
-                LiquidBounce.eventManager.callEvent(new EntityMovementEvent(EntityImplKt.wrap(et)));
         }
     }
 
@@ -1732,25 +1700,6 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
 
     public void handleResourcePack(S48PacketResourcePackSend packetIn)
     {
-        {
-            final String url = packetIn.getURL();
-            final String hash = packetIn.getHash();
-
-            try {
-                final String scheme = new URI(url).getScheme();
-                final boolean isLevelProtocol = "level".equals(scheme);
-
-                if(!"http".equals(scheme) && !"https".equals(scheme) && !isLevelProtocol)
-                    throw new URISyntaxException(url, "Wrong protocol");
-
-                if(isLevelProtocol && (url.contains("..") || !url.endsWith("/resources.zip")))
-                    throw new URISyntaxException(url, "Invalid levelstorage resourcepack path");
-            }catch(final URISyntaxException e) {
-                ClientUtils.getLogger().error("Failed to handle resource pack", e);
-                netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.FAILED_DOWNLOAD));
-                return;
-            }
-        }
         final String s = packetIn.getURL();
         final String s1 = packetIn.getHash();
 

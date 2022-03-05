@@ -5,7 +5,8 @@
  */
 package net.ccbluex.liquidbounce.utils;
 
-import javax.vecmath.Vector3d;
+import net.minecraft.util.Vector3d;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -60,7 +60,6 @@ public abstract class Entity implements ICommandSender
     private static int nextEntityID;
     private int entityId;
     public double renderDistanceWeight;
-
     /**
      * Blocks entities from spawning when they do their AABB check to make sure the spot is clear of entities that can
      * prevent spawning.
@@ -125,7 +124,7 @@ public abstract class Entity implements ICommandSender
      */
     public boolean isCollided;
     public boolean velocityChanged;
-    protected boolean isInWeb;
+    public boolean isInWeb;
     private boolean isOutsideBorder;
 
     /**
@@ -287,7 +286,13 @@ public abstract class Entity implements ICommandSender
         this.dataWatcher.addObject(4, Byte.valueOf((byte)0));
         this.entityInit();
     }
+    public int getNextStepDistance() {
+        return nextStepDistance;
+    }
 
+    public void setNextStepDistance(int nextStepDistance) {
+        this.nextStepDistance = nextStepDistance;
+    }
     protected abstract void entityInit();
 
     public DataWatcher getDataWatcher()

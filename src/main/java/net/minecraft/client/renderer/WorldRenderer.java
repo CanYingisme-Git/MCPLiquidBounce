@@ -1,6 +1,8 @@
 package net.minecraft.client.renderer;
 
 import com.google.common.primitives.Floats;
+
+import java.awt.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -421,6 +423,7 @@ public class WorldRenderer
             this.rawIntBuffer.put(j1, Float.floatToRawIntBits((float)(z + this.zOffset) + Float.intBitsToFloat(this.rawIntBuffer.get(j1))));
         }
     }
+
 
     /**
      * Takes in the pass the call list is being requested for. Args: renderPass
@@ -1076,5 +1079,23 @@ public class WorldRenderer
         {
             return this.stateVertexFormat;
         }
+    }
+    public WorldRenderer tex(double u,double v){
+        func_181673_a(u, v);
+        return this;
+    }
+    public void begin(int p_181668_1_, VertexFormat p_181668_2_){
+        func_181668_a(p_181668_1_,p_181668_2_);
+    }
+    public WorldRenderer pos(double x, double y, double z){
+        func_181662_b(x,y,z);
+        return this;
+    }
+    public WorldRenderer color(float red, float green, float blue, float p_178994_4_){
+        func_181666_a(red, green, blue, p_178994_4_);
+        return this;
+    }
+    public void endVertex(){
+        func_181675_d();
     }
 }

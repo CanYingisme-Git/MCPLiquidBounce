@@ -17,7 +17,7 @@ abstract class WrappedCreativeTabs(val name: String) {
     lateinit var representedType: ICreativeTabs
 
     init {
-        LiquidBounce.wrapper.classProvider.wrapCreativeTab(name, this)
+        LiquidBounce.wrapper.classProvider.wrapCreativeTab(name,this)
     }
 
     open fun displayAllReleventItems(items: MutableList<IItemStack>) {}

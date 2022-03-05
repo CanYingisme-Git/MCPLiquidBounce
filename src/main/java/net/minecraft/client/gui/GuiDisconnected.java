@@ -90,6 +90,7 @@ public class GuiDisconnected extends GuiScreen
                 ServerUtils.connectToLastServer();
                 break;
             case 3:
+                /*
                 if (!GuiTheAltening.Companion.getApiKey().isEmpty()) {
                     final String apiKey = GuiTheAltening.Companion.getApiKey();
                     final TheAltening theAltening = new TheAltening(apiKey);
@@ -118,6 +119,8 @@ public class GuiDisconnected extends GuiScreen
                 final MinecraftAccount minecraftAccount = accounts.get(new Random().nextInt(accounts.size()));
                 GuiAltManager.login(minecraftAccount);
                 ServerUtils.connectToLastServer();
+
+                 */
                 break;
             case 4:
                 LoginUtils.loginCracked(RandomUtils.randomString(RandomUtils.nextInt(5, 16)));
@@ -159,17 +162,7 @@ public class GuiDisconnected extends GuiScreen
         }
     }
     private void drawReconnectDelaySlider() {
-        buttonList.add(autoReconnectDelaySlider =
-                new GuiSlider(2, this.width / 2 + 2, this.height / 2 + field_175353_i / 2
-                        + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "AutoReconnect: ",
-                        "ms", AutoReconnect.MIN, AutoReconnect.MAX, AutoReconnect.INSTANCE.getDelay(), false, true,
-                        guiSlider -> {
-                            AutoReconnect.INSTANCE.setDelay((int)(((GuiSlider)(Object)guiSlider).func_175217_d()));
 
-                            this.reconnectTimer = 0;
-                            this.updateReconnectButton();
-                            this.updateSliderText();
-                        }));
     }
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#0");
     private void updateSliderText() {

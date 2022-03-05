@@ -11,7 +11,7 @@ import net.minecraft.inventory.IInventory
 
 class IInventoryImpl(val wrapped: IInventory) : IIInventory {
     override val name: String
-        get() = wrapped.name
+        get() = wrapped.displayName.formattedText
 
     override fun equals(other: Any?): Boolean {
         return other is IInventoryImpl && other.wrapped == this.wrapped
