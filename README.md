@@ -1,5 +1,7 @@
 # MCPLiquidBounce
 MCP-based LiquidBounce 
+# About 
+It works now.But it must have many problems.
 ## License
 This project is subject to the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html). This does only apply for source code located directly in this clean repository. During the development and compilation process, additional source code may be used to which we have obtained no rights. Such code is not covered by the GPL license.
 
